@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
+#include <Geode/modify/MusicDownloadManager.hpp>
 #include "UI/NongLayer.hpp"
 
 #include <string>
@@ -27,3 +28,14 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 		return true;
 	}
 };
+
+// Keeping this here for good measure
+// class $modify(MusicDownloadManager) {
+// 	gd::string pathForSong(int id) {
+// 		if (id == some_id) {
+// 			return gd::string("Path");
+// 		} else {
+// 			return MusicDownloadManager::pathForSong(id);
+// 		}
+// 	}
+// };

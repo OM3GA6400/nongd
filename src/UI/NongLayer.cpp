@@ -8,6 +8,8 @@ bool NongLayer::init(int songID) {
     this->createBackButtonMenu();
 
     this->createList();
+    auto testing = Mod::get()->getSavedValue<std::string>("test", "bad");
+    log::info("this is a test: {}", testing);
 
     if (this->doNongsExist()) {
         log::info("Nongs exist!");
@@ -43,14 +45,19 @@ void NongLayer::createList() {
 CCArray* NongLayer::createNongCells() {
     auto songs = CCArray::create();
 
-    SongInfo songInfo = {
+    SongInfo songInfo {
         ghc::filesystem::path("C:\\Users"),
-        "test",
-        "test"
+        std::string("test"),
+        std::string("test")
     };
     songs->addObject(NongCell::create(songInfo, this, this->getCellSize()));
 
     return songs;
+}
+
+std::vector<SongInfo> NongLayer::getNongs() const {
+   std::vector<SongInfo> items;
+   return items;
 }
 
 CCSize NongLayer::getCellSize() const {

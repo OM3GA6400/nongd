@@ -2,6 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include <string>
+#include <vector>
 
 #include "../types/SongInfo.hpp"
 #include "NongCell.hpp"
@@ -28,6 +29,7 @@ protected:
     void createPath();
     void createList();
     CCArray* createNongCells();
+    std::vector<SongInfo> getNongs() const;
     CCSize getCellSize() const;
     CCSize getListSize() const;
 

@@ -4,20 +4,27 @@
 
 USE_GEODE_NAMESPACE();
 
-struct SongInfo : public CCObject {
-public:
-    ghc::filesystem::path getSongPath() { return m_path; }
-    std::string getSongName() { return m_songName; }
-    std::string getSongAuthor() { return m_authorName; }
+struct SongInfo {
+    ghc::filesystem::path path;
+    std::string songName;
+    std::string authorName;
+};
 
-    SongInfo(ghc::filesystem::path path, std::string songName, std::string authorName) {
-        m_path = path;
-        m_songName = songName;
-        m_authorName = authorName;
+template<>
+struct json::Serialize<SongInfo> {
+    static SongInfo from_json(json::Value const& value) {
+        return SongInfo {
+            .path = ghc::filesystem::path(value["path"].as_string()),
+            .songName = value["songName"].as_string(),
+            .authorName = value["authorName"].as_string()
+        };
     }
-    SongInfo() {}
-private:
-    ghc::filesystem::path m_path;
-    std::string m_songName;
-    std::string m_authorName;
+
+    static json::Value to_json(SongInfo const& value) {
+        auto obj = json::Object();
+        obj["path"] = value.path.string();
+        obj["songName"] = value.songName;
+        obj["authorName"] = value.authorName;
+        return obj;
+    }
 };
