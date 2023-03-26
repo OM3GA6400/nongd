@@ -2,7 +2,7 @@
 
 > **NOTE**: This mod is still in very early development, I'm still figuring out Geode so this will take a while. The README here is a proof of concept, basically what I want to achieve with this mod.
 
-NONGD is a song manager for Geometry Dash. It swapps newgrounds songs with their NONG counterparts.
+NONGD is a song manager for Geometry Dash. It swaps newgrounds songs with their NONG counterparts.
 
 ## What is NONG?
 
