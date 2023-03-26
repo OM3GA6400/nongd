@@ -1,0 +1,13 @@
+{
+	"geode": "1.0.0-beta.10",
+	"version": "v1.0.0",
+	"id": "fleym.nongd",
+	"name": "nongd",
+	"developer": "Fleym",
+	"description": "A NONG song manager for Geometry Dash!",
+	"resources": {
+		"sprites": [
+			"resources/test_button.png"
+		]
+	}
+}
