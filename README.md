@@ -1,3 +1,3 @@
-# nongd
+# NONGD
 
-This is where she makes a mod.
+NONGD is a song manager for Geometry Dash. It swapps newgrounds songs with their NONG counterparts.
