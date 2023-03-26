@@ -47,8 +47,8 @@ CCArray* NongLayer::createNongCells() {
 
     SongInfo songInfo {
         ghc::filesystem::path("C:\\Users"),
-        std::string("test"),
-        std::string("test")
+        std::string("Magic Touch"),
+        std::string("Romos")
     };
     songs->addObject(NongCell::create(songInfo, this, this->getCellSize()));
 
