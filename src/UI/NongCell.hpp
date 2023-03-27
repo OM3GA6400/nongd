@@ -2,9 +2,11 @@
 
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
-#include "NongLayer.hpp"
+#include "NongPopup.hpp"
 
 USE_GEODE_NAMESPACE();
+
+class NongPopup;
 
 class NongListCell : public CCLayer {
 protected:
@@ -23,7 +25,11 @@ protected:
     CCLabelBMFont* m_authorNameLabel;
     CCLayer* m_songInfoLayer;
 
-    bool init(SongInfo info, CCLayer* layer, CCSize const& size);
+    NongPopup* m_parentPopup;
+
+    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected);
+
+    void onSet();
 public:
-    static NongCell* create(SongInfo info, CCLayer* layer, CCSize const& size);
+    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected = false);
 };

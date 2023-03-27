@@ -2,7 +2,7 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/MusicDownloadManager.hpp>
-#include "UI/NongLayer.hpp"
+#include "UI/NongPopup.hpp"
 
 #include <string>
 
@@ -19,13 +19,20 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 		auto nongButton = CCMenuItemSpriteExtra::create(
 			sprite,
 			this,
-			menu_selector(NongLayer::onNongLayer)
+			menu_selector(MyLevelInfoLayer::addNongLayer)
 		);
 		nongButton->setTag(level->m_songID);
 
 		rightSideMenu->addChild(nongButton);
 		rightSideMenu->updateLayout();
 		return true;
+	}
+
+	void addNongLayer(CCObject* target) {
+		auto popup = NongPopup::create(target->getTag());
+		popup->m_noElasticity = true;
+		popup->setZOrder(69);
+		popup->show();
 	}
 };
 

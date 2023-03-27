@@ -8,8 +8,6 @@ bool NongLayer::init(int songID) {
     this->createBackButtonMenu();
 
     this->createList();
-    auto testing = Mod::get()->getSavedValue<std::string>("test", "bad");
-    log::info("this is a test: {}", testing);
 
     if (this->doNongsExist()) {
         log::info("Nongs exist!");
@@ -34,7 +32,7 @@ void NongLayer::createList() {
         this->getListSize().height
     );
 
-    std::string title = "NONGs for ID " + std::to_string(this->m_songID);
+    std::string title = "NONGs for " + std::to_string(this->m_songID);
 
     this->m_list = GJListLayer::create(list, title.c_str(), ccc4(0, 0, 0, 180), 358.f, 220.f);
     this->m_list->setZOrder(2);
@@ -123,7 +121,8 @@ void NongLayer::createBackButtonMenu() {
 }
 
 void NongLayer::keyBackClicked() {
-    CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
+    this->removeFromParent();
+    // CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
 }
 
 void NongLayer::onBackButton(CCObject* target) {
@@ -135,7 +134,8 @@ void NongLayer::onNongLayer(CCObject* target) {
 
     auto scene = CCScene::create();
     scene->addChild(layer);
-    auto transition = CCTransitionFade::create(0.5f, scene);
+    // auto transition = CCTransitionFade::create(0.5f, scene);
+    auto transition = CCTransitionMoveInT::create(0.5f, scene);
     CCDirector::sharedDirector()->pushScene(transition);
 }
 

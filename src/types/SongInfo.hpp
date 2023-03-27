@@ -28,3 +28,33 @@ struct json::Serialize<SongInfo> {
         return obj;
     }
 };
+
+template<>
+struct json::Serialize<std::vector<SongInfo>> {
+    static std::vector<SongInfo> from_json(json::Array const& values) {
+        std::vector<SongInfo> ret;
+        for (auto jsonValue : values) {
+            SongInfo song {
+                .path = ghc::filesystem::path(jsonValue["path"].as_string()),
+                .songName = jsonValue["songName"].as_string(),
+                .authorName = jsonValue["authorName"].as_string()
+            };
+
+            ret.push_back(song);
+        }
+        return ret;
+    }
+
+    static json::Value to_json(std::vector<SongInfo> const& values) {
+        auto array = json::Array();
+        for (auto song : values) {
+            auto obj = json::Object();
+            obj["path"] = song.path.string();
+            obj["songName"] = song.songName;
+            obj["authorName"] = song.authorName;
+            array.push_back(obj);
+        }
+        
+        return array;
+    }
+};
