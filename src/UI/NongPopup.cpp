@@ -45,48 +45,36 @@ CCSize NongPopup::getPopupSize() const {
 
 void NongPopup::setSongs() {
     this->m_songs.clear();
-    for (int i = 0; i < 10; i++) {
-        SongInfo songInfo {
-            ghc::filesystem::path("C:\\Users"),
-            std::string("Magic Touch"),
-            std::string("Romos")
-        };
-        m_songs.push_back(songInfo);
-    }
+    m_songs = NongManager::getNongs(this->m_songID);
 }
 
 CCArray* NongPopup::createNongCells() {
     auto songs = CCArray::create();
-    if (this->m_activeSong.path.string() == "") {
-        this->setActiveSongFromSave();
-    }
+    auto activeSong = this->getActiveSong();
 
-    this->m_songs.push_back(this->m_activeSong);
+    songs->addObject(NongCell::create(activeSong, this, this->getCellSize()));
 
-    int i = 0;
     for (auto song : m_songs) {
-        if (this->m_activeSong.path.string() == song.path.string()) {
-            songs->addObject(NongCell::create(song, this, this->getCellSize(), true));
-        } else {
-            songs->addObject(NongCell::create(song, this, this->getCellSize()));
+        if (activeSong.path.string() == song.path.string()) {
+            continue;
         }
-        i++;
+        songs->addObject(NongCell::create(song, this, this->getCellSize()));
     }
 
     return songs;
 }
 
-void NongPopup::setActiveSongFromSave() {
-    auto songIDstr = std::to_string(this->m_songID);
-    char* userfolder = getenv("USERPROFILE");
-    ghc::filesystem::path gdPath = std::string(userfolder);
-    gdPath.append("AppData").append("Local").append("GeometryDash").append(songIDstr + ".mp3");
-    SongInfo defaultSong = {
-        gdPath,
-        std::string("Default"),
-        std::string("The default song!")
-    };
-    this->m_activeSong = Mod::get()->getSavedValue<SongInfo>(songIDstr, defaultSong);
+SongInfo NongPopup::getActiveSong() {
+    for (auto song : m_songs) {
+        if (song.selected) {
+            return song;
+        }
+    }
+    throw std::exception("Yoy did bad");
+}
+
+void NongPopup::saveSongsToJson() {
+    NongManager::saveNongs(this->m_songs, this->m_songID);
 }
 
 CCSize NongPopup::getCellSize() const {
@@ -147,23 +135,24 @@ void NongPopup::createList() {
     this->m_listLayer->addChild(sideBottom);
     this->m_listLayer->addChild(sideRight);
     this->m_listLayer->addChild(this->m_list);
-
-    // std::string title = "NONGs for " + std::to_string(this->m_songID);
-
-    // this->m_list = GJListLayer::create(
-    //     list, 
-    //     title.c_str(), 
-    //     ccc4(0, 0, 0, 180),
-    //     this->getListSize().width,
-    //     this->getListSize().height
-    // );
-    // this->m_list->setZOrder(2);
     this->m_listLayer->setPosition(winSize / 2 - m_list->getScaledContentSize() / 2);
     this->addChild(m_listLayer);
 }
 
-void NongPopup::setActiveSong(const SongInfo& song) {
-    this->m_activeSong = song;
-    auto songIDstr = std::to_string(this->m_songID);
-    Mod::get()->setSavedValue<SongInfo>(songIDstr, song);
+void NongPopup::setActiveSong(SongInfo song) {
+    auto activeSong = this->getActiveSong();
+    for (auto& storedSong : m_songs) {
+        if (storedSong.path.string() == song.path.string()) {
+            storedSong.selected = true;
+            continue;
+        }
+        if (storedSong.path.string() == activeSong.path.string()) {
+            storedSong.selected = false;
+        }
+    }
+    this->saveSongsToJson();
+    this->m_listLayer->removeAllChildrenWithCleanup(true);
+    this->removeChild(m_listLayer);
+    CC_SAFE_DELETE(m_listLayer);
+    this->createList();
 }

@@ -3,6 +3,8 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/MusicDownloadManager.hpp>
 #include "UI/NongPopup.hpp"
+#include "types/SongInfo.hpp"
+#include "NongManager.hpp"
 
 #include <string>
 
@@ -37,12 +39,14 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 };
 
 // Keeping this here for good measure
-// class $modify(MusicDownloadManager) {
-// 	gd::string pathForSong(int id) {
-// 		if (id == some_id) {
-// 			return gd::string("Path");
-// 		} else {
-// 			return MusicDownloadManager::pathForSong(id);
-// 		}
-// 	}
-// };
+class $modify(MusicDownloadManager) {
+	gd::string pathForSong(int id) {
+		auto songs = NongManager::getNongs(id);
+		for (auto song : songs) {
+			if (song.selected) {
+				return gd::string(song.path.string());
+			}
+		}
+		return MusicDownloadManager::pathForSong(id);
+	}
+};

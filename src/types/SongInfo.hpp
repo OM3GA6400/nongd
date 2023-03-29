@@ -8,6 +8,7 @@ struct SongInfo {
     ghc::filesystem::path path;
     std::string songName;
     std::string authorName;
+    bool selected = false;
 };
 
 template<>
@@ -16,7 +17,8 @@ struct json::Serialize<SongInfo> {
         return SongInfo {
             .path = ghc::filesystem::path(value["path"].as_string()),
             .songName = value["songName"].as_string(),
-            .authorName = value["authorName"].as_string()
+            .authorName = value["authorName"].as_string(),
+            .selected = value["selected"].as_bool()
         };
     }
 
@@ -25,6 +27,7 @@ struct json::Serialize<SongInfo> {
         obj["path"] = value.path.string();
         obj["songName"] = value.songName;
         obj["authorName"] = value.authorName;
+        obj["selected"] = value.selected;
         return obj;
     }
 };
@@ -37,7 +40,8 @@ struct json::Serialize<std::vector<SongInfo>> {
             SongInfo song {
                 .path = ghc::filesystem::path(jsonValue["path"].as_string()),
                 .songName = jsonValue["songName"].as_string(),
-                .authorName = jsonValue["authorName"].as_string()
+                .authorName = jsonValue["authorName"].as_string(),
+                .selected = jsonValue["selected"].as_bool()
             };
 
             ret.push_back(song);
@@ -52,6 +56,7 @@ struct json::Serialize<std::vector<SongInfo>> {
             obj["path"] = song.path.string();
             obj["songName"] = song.songName;
             obj["authorName"] = song.authorName;
+            obj["selected"] = song.selected;
             array.push_back(obj);
         }
         

@@ -3,7 +3,11 @@
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
 #include "NongCell.hpp"
+#include "../NongManager.hpp"
 #include <vector>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 USE_GEODE_NAMESPACE();
 
@@ -15,13 +19,13 @@ protected:
     int m_songID;
 
     std::vector<SongInfo> m_songs;
-    SongInfo m_activeSong;
 
     bool setup(int songID) override;
     CCSize getPopupSize() const;
 
     void setSongs();
-    void setActiveSongFromSave();
+    SongInfo getActiveSong();
+    void saveSongsToJson();
 
     void createList();
     CCArray* createNongCells();
@@ -31,5 +35,5 @@ protected:
     void createAddButton();
 public:
     static NongPopup* create(int songID);
-    void setActiveSong(const SongInfo& song);
+    void setActiveSong(SongInfo song);
 };

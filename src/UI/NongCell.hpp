@@ -27,9 +27,8 @@ protected:
 
     NongPopup* m_parentPopup;
 
-    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected);
-
-    void onSet();
+    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size);
 public:
-    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected = false);
+    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size);
+    void onSet(CCObject*);
 };

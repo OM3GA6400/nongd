@@ -15,28 +15,37 @@ void NongListCell::draw() {
 
 // NongCell
 
-void NongCell::onSet() {
-    this->m_parentPopup->setActiveSong(this->m_songInfo);
-}
-
-bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
+bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size) {
     if (!NongListCell::init(parentPopup, size)) return false;
+
+    bool selected = info.selected;
+
     this->m_songInfo = info;
     this->m_parentPopup = parentPopup;
 
-    if (!selected) {
-        auto button = CCMenuItemSpriteExtra::create(
-            ButtonSprite::create("Set"),
+    CCMenuItemSpriteExtra* button;
+
+    if (selected) {
+        auto sprite = ButtonSprite::create("Set", "goldFont.fnt", "GJ_button_02.png");
+        // sprite->setColor(ccc3(0, 204, 255));
+        button = CCMenuItemSpriteExtra::create(
+            sprite,
             this,
             nullptr
         );
-        button->setAnchorPoint(ccp(0.5f, 0.5f));
-        auto menu = CCMenu::create();
-        menu->addChild(button);
-        menu->setAnchorPoint(ccp(0, 0));
-        menu->setPosition(ccp(337.f, 29.f));
-        this->addChild(menu);
+    } else {
+        button = CCMenuItemSpriteExtra::create(
+            ButtonSprite::create("Set"),
+            this,
+            menu_selector(NongCell::onSet)
+        );
     }
+    button->setAnchorPoint(ccp(0.5f, 0.5f));
+    auto menu = CCMenu::create();
+    menu->addChild(button);
+    menu->setAnchorPoint(ccp(0, 0));
+    menu->setPosition(ccp(337.f, 29.f));
+    this->addChild(menu);
 
     this->m_songInfoLayer = CCLayer::create();
 
@@ -61,9 +70,13 @@ bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, b
     return true;
 }
 
-NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
+void NongCell::onSet(CCObject* target) {
+    this->m_parentPopup->setActiveSong(this->m_songInfo);
+}
+
+NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size) {
     auto ret = new NongCell();
-    if (ret && ret->init(info, parentPopup, size, selected)) {
+    if (ret && ret->init(info, parentPopup, size)) {
         return ret;
     }
     CC_SAFE_DELETE(ret);
