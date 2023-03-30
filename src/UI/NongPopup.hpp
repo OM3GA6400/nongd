@@ -4,6 +4,7 @@
 #include "../types/SongInfo.hpp"
 #include "NongCell.hpp"
 #include "../NongManager.hpp"
+#include "NongAddPopup.hpp"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -33,7 +34,11 @@ protected:
     CCSize getListSize() const;
 
     void createAddButton();
+
+    void openAddPopup(CCObject*);
 public:
     static NongPopup* create(int songID);
     void setActiveSong(SongInfo song);
+    void addSong(SongInfo song);
+    void deleteSong(SongInfo song);
 };

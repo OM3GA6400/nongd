@@ -8,6 +8,8 @@ USE_GEODE_NAMESPACE();
 
 class NongManager {
 public:
+    static void addNong(SongInfo song, int songID);
+    static void deleteNong(SongInfo song, int songID);
     static std::vector<SongInfo> getNongs(int songID);
     static void saveNongs(const std::vector<SongInfo>& songs, int songID);
 };

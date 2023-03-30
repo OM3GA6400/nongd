@@ -33,7 +33,6 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 	void addNongLayer(CCObject* target) {
 		auto popup = NongPopup::create(target->getTag());
 		popup->m_noElasticity = true;
-		popup->setZOrder(69);
 		popup->show();
 	}
 };

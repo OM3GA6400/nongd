@@ -47,3 +47,27 @@ void NongManager::saveNongs(const std::vector<SongInfo>& songs, int songID) {
     output << json.dump();
     output.close();
 }
+
+void NongManager::addNong(SongInfo song, int songID) {
+    auto existingSongs = NongManager::getNongs(songID);
+    for (auto savedSong : existingSongs) {
+        if (song.path.string() == savedSong.path.string()) {
+            // if song exists, just return
+            return;
+        }
+    }
+    existingSongs.push_back(song);
+    NongManager::saveNongs(existingSongs, songID);
+}
+
+void NongManager::deleteNong(SongInfo song, int songID) {
+    std::vector<SongInfo> newSongs;
+    auto existingSongs = NongManager::getNongs(songID);
+    for (auto savedSong : existingSongs) {
+        if (savedSong.path.string() == song.path.string()) {
+            continue;
+        }
+        newSongs.push_back(savedSong);
+    }
+    NongManager::saveNongs(newSongs, songID);
+}

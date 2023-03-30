@@ -17,11 +17,13 @@ bool NongPopup::setup(int songID) {
 
 void NongPopup::createAddButton() {
     this->m_addButtonMenu = CCMenu::create();
+    this->m_addButtonMenu->setID("add-button-menu");
     auto addButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_plusBtn_001.png"),
         this,
-        nullptr
+        menu_selector(NongPopup::openAddPopup)
     );
+    addButton->setID("add-button");
     
     this->m_addButtonMenu->addChild(addButton);
     this->m_addButtonMenu->setPosition(ccp(524.5f, 29.f));
@@ -93,12 +95,14 @@ void NongPopup::createList() {
     auto winSize = CCDirector::sharedDirector()->getWinSize();
 
     this->m_listLayer = CCLayer::create();
+    this->m_listLayer->setID("nong-list-layer");
     this->m_list = ListView::create(
         cells,
         this->getCellSize().height,
         this->getListSize().width,
         this->getListSize().height
     );
+    this->m_list->setID("nong-list");
 
     this->m_list->setPositionY(-10.f);
 
@@ -154,5 +158,37 @@ void NongPopup::setActiveSong(SongInfo song) {
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
     CC_SAFE_DELETE(m_listLayer);
+    this->createList();
+}
+
+void NongPopup::openAddPopup(CCObject* target) {
+    auto popup = NongAddPopup::create(this);
+    popup->m_noElasticity = true;
+    popup->show();
+}
+
+void NongPopup::addSong(SongInfo song) {
+    for (auto savedSong : this->m_songs) {
+        if (song.path.string() == savedSong.path.string()) {
+            FLAlertLayer::create("Error", "This NONG already exists! (<cy>" + savedSong.songName + "</c>)", "Ok")->show();
+            return;
+        }
+    }
+    NongManager::addNong(song, this->m_songID);
+    FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
+    this->m_listLayer->removeAllChildrenWithCleanup(true);
+    this->removeChild(m_listLayer);
+    CC_SAFE_DELETE(m_listLayer);
+    this->setSongs();
+    this->createList();
+}
+
+void NongPopup::deleteSong(SongInfo song) {
+    NongManager::deleteNong(song, this->m_songID);
+    FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
+    this->m_listLayer->removeAllChildrenWithCleanup(true);
+    this->removeChild(m_listLayer);
+    CC_SAFE_DELETE(m_listLayer);
+    this->setSongs();
     this->createList();
 }

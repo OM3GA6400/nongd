@@ -8,7 +8,7 @@ USE_GEODE_NAMESPACE();
 
 class NongPopup;
 
-class NongListCell : public CCLayer {
+class NongListCell : public CCLayer, public FLAlertLayerProtocol {
 protected:
     float m_width;
     float m_height;
@@ -28,7 +28,10 @@ protected:
     NongPopup* m_parentPopup;
 
     bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size);
+
+    virtual void FLAlert_Clicked(FLAlertLayer*, bool btn2);
 public:
     static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size);
     void onSet(CCObject*);
+    void deleteSong(CCObject*);
 };
