@@ -71,3 +71,11 @@ void NongManager::deleteNong(SongInfo song, int songID) {
     }
     NongManager::saveNongs(newSongs, songID);
 }
+
+std::string NongManager::getFormattedSize(SongInfo song) {
+    auto size = ghc::filesystem::file_size(song.path);
+    double toMegabytes = size / 1024.f / 1024.f;
+    std::stringstream ss;
+    ss << std::setprecision(3) << toMegabytes << "MB";
+    return ss.str();
+}
