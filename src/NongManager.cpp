@@ -1,8 +1,89 @@
 #include "NongManager.hpp"
 
 std::vector<SongInfo> NongManager::getNongs(int songID) {
-    std::vector<SongInfo> songs;
+    if (NongManager::createJsonIfNull(songID)) {
+        std::vector<SongInfo> songs;
+        SongInfo defaultSong = NongManager::createDefaultSong(songID);
+        songs.push_back(defaultSong);
+        return songs;
+    }
 
+    auto songIDstr = std::to_string(songID);
+
+    auto path = Mod::get()->getSaveDir().append("nong_data").append(songIDstr + ".json");
+    std::vector<SongInfo> test;
+    test.push_back(NongManager::createDefaultSong(songID));
+
+    std::ifstream input(path.string());
+    std::stringstream buffer;
+    buffer << input.rdbuf();
+    input.close();
+
+    auto json = json::parse(std::string_view(buffer.str())).as_array();
+    return json::Serialize<std::vector<SongInfo>>::from_json(json);
+}
+
+std::vector<SongInfo> NongManager::validateNongs(int songID) {
+    auto songsToValidate = NongManager::getNongs(songID);
+    // Validate nong paths and delete those that don't exist anymore
+    std::vector<SongInfo> invalidSongs;
+    std::vector<SongInfo> validSongs;
+
+    size_t activeSongs = 0;
+
+    for (auto &song : songsToValidate) {
+        if (song.selected) activeSongs++;
+        if (!ghc::filesystem::exists(song.path) && song.songName != "Default") {
+            invalidSongs.push_back(song);
+            if (song.selected) {
+                activeSongs--;
+            }
+        } else {
+            validSongs.push_back(song);
+        }
+    }
+
+    // if something goes oopsie and i have multiple active songs, just activate the default
+    if (activeSongs == 0 || activeSongs > 1) {
+        for (auto &song : validSongs) {
+            if (song.songName == "Default") {
+                song.selected = true;
+            } else {
+                song.selected = false;
+            }
+        }
+    }
+
+    if (invalidSongs.size() > 0 || activeSongs == 0 || activeSongs > 1) {
+        NongManager::saveNongs(validSongs, songID);
+    }
+
+    return invalidSongs;
+}
+
+bool NongManager::createJsonIfNull(int songID) {
+    std::vector<SongInfo> songs;
+    auto songIDstr = std::to_string(songID);
+    SongInfo defaultSong = NongManager::createDefaultSong(songID);
+
+    auto path = Mod::get()->getSaveDir().append("nong_data");
+    if (!ghc::filesystem::exists(path)) {
+        ghc::filesystem::create_directory(path);
+        songs.push_back(defaultSong);
+        NongManager::saveNongs(songs, songID);
+        return true;
+    }
+    path.append(songIDstr + ".json");
+    if (!ghc::filesystem::exists(path)) {
+        songs.push_back(defaultSong);
+        NongManager::saveNongs(songs, songID);
+        return true;
+    }
+
+    return false;
+}
+
+SongInfo NongManager::createDefaultSong(int songID) {
     auto songIDstr = std::to_string(songID);
     char* userfolder = getenv("USERPROFILE");
     ghc::filesystem::path gdPath = std::string(userfolder);
@@ -13,26 +94,7 @@ std::vector<SongInfo> NongManager::getNongs(int songID) {
         std::string("The default song!"),
         true
     };
-    auto path = Mod::get()->getSaveDir().append("nong_data");
-    if (!ghc::filesystem::exists(path)) {
-        ghc::filesystem::create_directory(path);
-        songs.push_back(defaultSong);
-        NongManager::saveNongs(songs, songID);
-        return songs;
-    }
-    path.append(songIDstr + ".json");
-    if (!ghc::filesystem::exists(path)) {
-        songs.push_back(defaultSong);
-        NongManager::saveNongs(songs, songID);
-        return songs;
-    }
-
-    std::ifstream input(path.string());
-    std::stringstream buffer;
-    buffer << input.rdbuf();
-    input.close();
-    auto json = json::parse(std::string_view(buffer.str())).as_array();
-    return json::Serialize<std::vector<SongInfo>>::from_json(json);
+    return defaultSong;
 }
 
 void NongManager::saveNongs(const std::vector<SongInfo>& songs, int songID) {
@@ -73,9 +135,14 @@ void NongManager::deleteNong(SongInfo song, int songID) {
 }
 
 std::string NongManager::getFormattedSize(SongInfo song) {
-    auto size = ghc::filesystem::file_size(song.path);
-    double toMegabytes = size / 1024.f / 1024.f;
-    std::stringstream ss;
-    ss << std::setprecision(3) << toMegabytes << "MB";
-    return ss.str();
+    try {
+        log::info("path: {}", song.path.string());
+        auto size = ghc::filesystem::file_size(song.path);
+        double toMegabytes = size / 1024.f / 1024.f;
+        std::stringstream ss;
+        ss << std::setprecision(3) << toMegabytes << "MB";
+        return ss.str();
+    } catch (ghc::filesystem::filesystem_error) {
+        return "0.00MB";
+    }
 }

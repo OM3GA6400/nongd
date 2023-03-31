@@ -30,6 +30,21 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 		rightSideMenu->updateLayout();
 
 		auto customSongWidget = static_cast<CustomSongWidget*>(this->getChildByID("custom-songs-widget"));
+
+		auto invalidSongs = NongManager::validateNongs(level->m_songID);
+
+		if (invalidSongs.size() > 0) {
+			std::string invalidSongList = "";
+			for (auto &song : invalidSongs) {
+				invalidSongList += song.songName + ", ";
+			}
+
+			invalidSongList = invalidSongList.substr(0, invalidSongList.size() - 2);
+			auto alert = FLAlertLayer::create("Invalid NONGs", "The NONGs [<cr>" + invalidSongList + "</c>] have been deleted, because their paths were invalid.", "Ok");
+			alert->m_scene = this;
+			alert->show();
+		}
+
 		auto songs = NongManager::getNongs(level->m_songID);
 
 		auto songNameLabel = getChildOfType<CCLabelBMFont>(customSongWidget, 0);
@@ -37,12 +52,12 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 		auto idAndSizeLabel = getChildOfType<CCLabelBMFont>(customSongWidget, 2);
 		auto menu = getChildOfType<CCMenu>(customSongWidget, 0);
 
-		// menu->setID("buttons-menu");
-		// authorNameLabel->setID("author-name-label");
-		// songNameLabel->setID("song-name-label");
-		// idAndSizeLabel->setID("id-and-size-label");
+		menu->setID("buttons-menu");
+		authorNameLabel->setID("author-name-label");
+		songNameLabel->setID("song-name-label");
+		idAndSizeLabel->setID("id-and-size-label");
 
-		auto moreButton = getChildOfType<CCMenuItemSpriteExtra>(menu, 5);
+		// auto moreButton = getChildOfType<CCMenuItemSpriteExtra>(menu, 5);
 		// moreButton->setID("more-button");
 
 		for (auto savedSong : songs) {
@@ -55,7 +70,7 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 				authorNameLabel->setString(authorName.c_str());
 				songNameLabel->limitLabelWidth(200, 0.8f, 0.2f);
 				authorNameLabel->limitLabelWidth(130, 0.8f, 0.2f);
-				moreButton->removeFromParent();
+				// moreButton->setVisible(false);
 			}
 		}
 
@@ -74,7 +89,7 @@ class $modify(MusicDownloadManager) {
 	gd::string pathForSong(int id) {
 		auto songs = NongManager::getNongs(id);
 		for (auto song : songs) {
-			if (song.selected) {
+			if (song.selected && ghc::filesystem::exists(song.path)) {
 				return gd::string(song.path.string());
 			}
 		}
