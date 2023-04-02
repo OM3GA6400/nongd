@@ -9,7 +9,7 @@
 
 #include <string>
 
-USE_GEODE_NAMESPACE();
+using namespace geode::prelude;
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer){
 	bool init(GJGameLevel* level){

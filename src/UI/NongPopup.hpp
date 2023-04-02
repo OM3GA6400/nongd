@@ -10,7 +10,7 @@
 #include <string>
 #include <sstream>
 
-USE_GEODE_NAMESPACE();
+using namespace geode::prelude;
 
 class NongPopup : public Popup<int> {
 protected:

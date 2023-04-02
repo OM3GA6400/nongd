@@ -1,8 +1,6 @@
 #pragma once
 
-#include <Geode/Geode.hpp>
-
-USE_GEODE_NAMESPACE();
+#include <string>
 
 struct SongInfo {
     ghc::filesystem::path path;

@@ -4,7 +4,7 @@
 #include "../types/SongInfo.hpp"
 #include "NongPopup.hpp"
 
-USE_GEODE_NAMESPACE();
+using namespace geode::prelude;
 
 class NongPopup;
 

@@ -5,7 +5,7 @@
 #include <Geode/Geode.hpp>
 #include <sstream>
 
-USE_GEODE_NAMESPACE();
+using namespace geode::prelude;
 
 class NongManager {
 private:
