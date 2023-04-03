@@ -198,7 +198,7 @@ void NongPopup::deleteSong(SongInfo const& song) {
 }
 
 void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
-		auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("id-and-size-label"));
+		auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
 		auto sizeText = NongManager::getFormattedSize(song);
 		std::string labelText;
 		if (songID != 0) {
@@ -206,6 +206,7 @@ void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
 		} else {
 			labelText = "SongID: NONG  Size: " + sizeText;
 		}
-
-		label->setString(labelText.c_str());
+        if (label) {
+		    label->setString(labelText.c_str());
+        }
 	}

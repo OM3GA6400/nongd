@@ -66,7 +66,7 @@ bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, b
     this->m_songNameLabel->limitLabelWidth(200.f, 0.8f, 0.1f);
 
     if (selected) {
-        this->m_songNameLabel->setColor(ccc3(0, 255, 0));
+        this->m_songNameLabel->setColor(ccc3(188, 254, 206));
     }
 
     this->m_authorNameLabel = CCLabelBMFont::create(m_songInfo.authorName.c_str(), "goldFont.fnt");
