@@ -15,6 +15,11 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 	bool init(SongInfoObject* songInfo, LevelSettingsObject* levelSettings, bool p2, bool p3, bool p4, bool p5, bool hideBackground) {
 		if (!CustomSongWidget::init(songInfo, levelSettings, p2, p3, p4, p5, hideBackground)) return false;
+
+		if (!this->getChildByID("song-name-label")) {
+			this->setStringIDs();
+		}
+
 		auto songNameLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("song-name-label"));
 		songNameLabel->setVisible(false);
 
@@ -73,6 +78,24 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		return true;
 	}
 
+	// Temporary, will be removed when Geode implements the PR I submitted
+	void setStringIDs() {
+		getChildOfType<CCScale9Sprite>(this, 0)->setID("bg");
+		getChildOfType<CCSprite>(this, 0)->setID("loading-bar");
+		getChildOfType<CCLabelBMFont>(this, 0)->setID("song-name-label");
+		getChildOfType<CCLabelBMFont>(this, 1)->setID("author-name-label");
+		getChildOfType<CCLabelBMFont>(this, 2)->setID("id-and-size-label");
+		getChildOfType<CCLabelBMFont>(this, 3)->setID("error-label");
+		getChildOfType<CCMenu>(this, 0)->setID("buttons-menu");
+		auto customSongWidgetMenu = this->getChildByID("buttons-menu");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 0)->setID("download-button");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 1)->setID("cancel-button");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 2)->setID("use-button");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 3)->setID("refresh-button");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 4)->setID("play-song-button");
+		getChildOfType<CCMenuItemSpriteExtra>(customSongWidgetMenu, 5)->setID("more-button");
+	}
+		
 	void addMenuItemLabel(std::string const& text, int songID) {
 		auto menu = CCMenu::create();
 		menu->setID("song-name-menu");
