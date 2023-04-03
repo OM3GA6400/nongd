@@ -15,10 +15,8 @@ void NongListCell::draw() {
 
 // NongCell
 
-bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size) {
+bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
     if (!NongListCell::init(parentPopup, size)) return false;
-
-    bool selected = info.selected;
 
     this->m_songInfo = info;
     this->m_parentPopup = parentPopup;
@@ -95,9 +93,9 @@ void NongCell::deleteSong(CCObject* target) {
     FLAlertLayer::create(this, "Are you sure?", "Are you sure you want to delete <cy>" + this->m_songInfo.songName + "</c> from your NONGs?", "No", "Yes")->show();
 }
 
-NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size) {
+NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
     auto ret = new NongCell();
-    if (ret && ret->init(info, parentPopup, size)) {
+    if (ret && ret->init(info, parentPopup, size, selected)) {
         return ret;
     }
     CC_SAFE_DELETE(ret);

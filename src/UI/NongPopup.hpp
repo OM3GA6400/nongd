@@ -19,7 +19,7 @@ protected:
     ListView* m_list;
     int m_songID;
 
-    std::vector<SongInfo> m_songs;
+    NongData m_songs;
 
     bool setup(int songID) override;
     CCSize getPopupSize() const;
@@ -38,7 +38,7 @@ protected:
     void openAddPopup(CCObject*);
 public:
     static NongPopup* create(int songID);
-    void setActiveSong(SongInfo song);
-    void addSong(SongInfo song);
-    void deleteSong(SongInfo song);
+    void setActiveSong(SongInfo const& song);
+    void addSong(SongInfo const& song);
+    void deleteSong(SongInfo const& song);
 };

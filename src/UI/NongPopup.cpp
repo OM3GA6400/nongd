@@ -46,7 +46,6 @@ CCSize NongPopup::getPopupSize() const {
 }
 
 void NongPopup::setSongs() {
-    this->m_songs.clear();
     m_songs = NongManager::getNongs(this->m_songID);
 }
 
@@ -54,21 +53,21 @@ CCArray* NongPopup::createNongCells() {
     auto songs = CCArray::create();
     auto activeSong = this->getActiveSong();
 
-    songs->addObject(NongCell::create(activeSong, this, this->getCellSize()));
+    songs->addObject(NongCell::create(activeSong, this, this->getCellSize(), true));
 
-    for (auto song : m_songs) {
-        if (activeSong.path.string() == song.path.string()) {
+    for (auto song : m_songs.songs) {
+        if (m_songs.active == song.path) {
             continue;
         }
-        songs->addObject(NongCell::create(song, this, this->getCellSize()));
+        songs->addObject(NongCell::create(song, this, this->getCellSize(), false));
     }
 
     return songs;
 }
 
 SongInfo NongPopup::getActiveSong() {
-    for (auto song : m_songs) {
-        if (song.selected) {
+    for (auto song : m_songs.songs) {
+        if (song.path == m_songs.active) {
             return song;
         }
     }
@@ -143,17 +142,9 @@ void NongPopup::createList() {
     this->addChild(m_listLayer);
 }
 
-void NongPopup::setActiveSong(SongInfo song) {
-    auto activeSong = this->getActiveSong();
-    for (auto& storedSong : m_songs) {
-        if (storedSong.path.string() == song.path.string()) {
-            storedSong.selected = true;
-            continue;
-        }
-        if (storedSong.path.string() == activeSong.path.string()) {
-            storedSong.selected = false;
-        }
-    }
+void NongPopup::setActiveSong(SongInfo const& song) {
+    this->m_songs.active = song.path;
+
     this->saveSongsToJson();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -167,8 +158,8 @@ void NongPopup::openAddPopup(CCObject* target) {
     popup->show();
 }
 
-void NongPopup::addSong(SongInfo song) {
-    for (auto savedSong : this->m_songs) {
+void NongPopup::addSong(SongInfo const& song) {
+    for (auto savedSong : this->m_songs.songs) {
         if (song.path.string() == savedSong.path.string()) {
             FLAlertLayer::create("Error", "This NONG already exists! (<cy>" + savedSong.songName + "</c>)", "Ok")->show();
             return;
@@ -183,7 +174,7 @@ void NongPopup::addSong(SongInfo song) {
     this->createList();
 }
 
-void NongPopup::deleteSong(SongInfo song) {
+void NongPopup::deleteSong(SongInfo const& song) {
     NongManager::deleteNong(song, this->m_songID);
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);

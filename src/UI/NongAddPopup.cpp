@@ -137,7 +137,6 @@ void NongAddPopup::addSong(CCObject* target) {
         return;
     }
 
-    log::info("big test: {}", this->m_songPath.extension().string());
     if (this->m_songPath.extension().string() != ".mp3") {
         FLAlertLayer::create("Error", "The selected file must be an mp3!", "Ok")->show();
         return;
@@ -153,11 +152,11 @@ void NongAddPopup::addSong(CCObject* target) {
         return;
     }
 
-    auto song = SongInfo {
-        this->m_songPath,
-        songName,
-        artistName,
-        false
+    SongInfo song = {
+        .path = this->m_songPath,
+        .songName = songName,
+        .authorName = artistName,
+        .songUrl = "local",
     };
 
     this->m_parentPopup->addSong(song);
