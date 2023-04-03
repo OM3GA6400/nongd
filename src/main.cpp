@@ -3,6 +3,8 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/MusicDownloadManager.hpp>
 #include <Geode/modify/CustomSongWidget.hpp>
+#include <Geode/modify/SongInfoObject.hpp>
+#include <Geode/utils/cocos.hpp>
 #include "UI/NongPopup.hpp"
 #include "types/SongInfo.hpp"
 #include "NongManager.hpp"
@@ -11,27 +13,13 @@
 
 using namespace geode::prelude;
 
-class $modify(MyLevelInfoLayer, LevelInfoLayer){
-	bool init(GJGameLevel* level){
-		if (!LevelInfoLayer::init(level)) {
-			return false;
-		}
+class $modify(MyCustomSongWidget, CustomSongWidget) {
+	bool init(SongInfoObject* songInfo, LevelSettingsObject* levelSettings, bool p2, bool p3, bool p4, bool p5, bool hideBackground) {
+		if (!CustomSongWidget::init(songInfo, levelSettings, p2, p3, p4, p5, hideBackground)) return false;
+		auto songNameLabel = this->getChildByID("song-name-label");
+		songNameLabel->setVisible(false);
 
-		auto rightSideMenu = this->getChildByID("right-side-menu");
-		auto sprite = CircleButtonSprite::createWithSprite("test_button.png"_spr);
-		auto nongButton = CCMenuItemSpriteExtra::create(
-			sprite,
-			this,
-			menu_selector(MyLevelInfoLayer::addNongLayer)
-		);
-		nongButton->setTag(level->m_songID);
-
-		rightSideMenu->addChild(nongButton);
-		rightSideMenu->updateLayout();
-
-		auto customSongWidget = static_cast<CustomSongWidget*>(this->getChildByID("custom-songs-widget"));
-
-		auto invalidSongs = NongManager::validateNongs(level->m_songID);
+		auto invalidSongs = NongManager::validateNongs(songInfo->m_songID);
 
 		if (invalidSongs.size() > 0) {
 			std::string invalidSongList = "";
@@ -45,36 +33,65 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 			alert->show();
 		}
 
-		auto songs = NongManager::getNongs(level->m_songID);
+		auto nong = NongManager::getActiveNong(songInfo->m_songID);
 
-		auto songNameLabel = getChildOfType<CCLabelBMFont>(customSongWidget, 0);
-		auto authorNameLabel = getChildOfType<CCLabelBMFont>(customSongWidget, 1);
-		auto idAndSizeLabel = getChildOfType<CCLabelBMFont>(customSongWidget, 2);
-		auto menu = getChildOfType<CCMenu>(customSongWidget, 0);
-
-		menu->setID("buttons-menu");
-		authorNameLabel->setID("author-name-label");
-		songNameLabel->setID("song-name-label");
-		idAndSizeLabel->setID("id-and-size-label");
-
-		// auto moreButton = getChildOfType<CCMenuItemSpriteExtra>(menu, 5);
-		// moreButton->setID("more-button");
-
-		for (auto savedSong : songs) {
-			if (savedSong.selected && savedSong.songName != "Default") {
-				auto authorName = "By " + savedSong.authorName;
-				auto idAndSizeStr = std::string("SongID: NONG  Size: ") + NongManager::getFormattedSize(savedSong);
-				idAndSizeLabel->setString(idAndSizeStr.c_str());
-				songNameLabel->setString(savedSong.songName.c_str());
-				songNameLabel->setColor(ccc3(187, 255, 164));
-				authorNameLabel->setString(authorName.c_str());
-				songNameLabel->limitLabelWidth(200, 0.8f, 0.2f);
-				authorNameLabel->limitLabelWidth(130, 0.8f, 0.2f);
-				// moreButton->setVisible(false);
-			}
-		}
+		this->m_songInfo->m_artistName = nong.authorName;
+		this->m_songInfo->m_songName = nong.songName;
+		this->updateSongObject(this->m_songInfo);
 
 		return true;
+	}
+
+	void addMenuItemLabel(std::string const& text, int songID) {
+		auto menu = CCMenu::create();
+		menu->setID("song-name-menu");
+
+		auto label = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
+		label->limitLabelWidth(220.f, 0.8f, 0.1f);
+		auto songNameMenuLabel = CCMenuItemLabel::create(
+			label,
+			this,
+			menu_selector(MyCustomSongWidget::addNongLayer)
+		);
+		songNameMenuLabel->setTag(songID);
+		// I am not even gonna try and understand why this works, but this places the label perfectly in the menu
+		auto labelScale = label->getScale();
+		songNameMenuLabel->setContentSize({ 220.f, labelScale * 30 });
+		songNameMenuLabel->setID("song-name-label");
+		songNameMenuLabel->setPosition(ccp(0.f, 0.f));
+		songNameMenuLabel->setAnchorPoint(ccp(0.f, 0.5f));
+		menu->addChild(songNameMenuLabel);
+		menu->setContentSize(ccp(220.f, 25.f));
+		menu->setPosition(ccp(-140.f, 27.5f));
+
+		this->addChild(menu);
+	}
+
+	void updateSongNameLabel(std::string const& text) {
+		auto menu = this->getChildByID("song-name-menu");
+		auto labelMenuItem = typeinfo_cast<CCMenuItemLabel*>(menu->getChildByID("song-name-label"));
+		labelMenuItem->setString(text.c_str());
+		auto child = typeinfo_cast<CCLabelBMFont*>(labelMenuItem->getChildren()->objectAtIndex(0));
+		child->limitLabelWidth(220.f, 0.8f, 0.1f);
+		auto labelScale = child->getScale();
+		labelMenuItem->setContentSize({ 220.f, labelScale * 30 });
+	}
+
+	void updateIDAndSizeLabel(SongInfo const& song) {
+		auto label = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("id-and-size-label"));
+		auto sizeText = NongManager::getFormattedSize(song);
+		auto labelText = "SongID: NONG  Size: " + sizeText;
+
+		label->setString(labelText.c_str());
+	}
+
+	void updateSongObject(SongInfoObject* song) {
+		CustomSongWidget::updateSongObject(song);
+		if (auto found = this->getChildByID("song-name-menu")) {
+			this->updateSongNameLabel(song->m_songName);
+			return;
+		}
+		this->addMenuItemLabel(song->m_songName, song->m_songID);
 	}
 
 	void addNongLayer(CCObject* target) {
@@ -87,11 +104,9 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer){
 // Keeping this here for good measure
 class $modify(MusicDownloadManager) {
 	gd::string pathForSong(int id) {
-		auto songs = NongManager::getNongs(id);
-		for (auto song : songs) {
-			if (song.selected && ghc::filesystem::exists(song.path)) {
-				return gd::string(song.path.string());
-			}
+		auto currentData = NongManager::getNongs(id);
+		if (ghc::filesystem::exists(currentData.active)) {
+			return currentData.active.string();
 		}
 		return MusicDownloadManager::pathForSong(id);
 	}

@@ -6,58 +6,59 @@ struct SongInfo {
     ghc::filesystem::path path;
     std::string songName;
     std::string authorName;
-    bool selected = false;
+    std::string songUrl;
+    double fileSize;
+};
+
+struct NongData {
+    ghc::filesystem::path active;
+    ghc::filesystem::path defaultPath;
+    std::vector<SongInfo> songs;
 };
 
 template<>
-struct json::Serialize<SongInfo> {
-    static SongInfo from_json(json::Value const& value) {
-        return SongInfo {
-            .path = ghc::filesystem::path(value["path"].as_string()),
-            .songName = value["songName"].as_string(),
-            .authorName = value["authorName"].as_string(),
-            .selected = value["selected"].as_bool()
+struct json::Serialize<NongData> {
+    static NongData from_json(json::Value const& value) {
+        std::vector<SongInfo> songs;
+        auto jsonSongs = value["songs"].as_array();
+
+        for (auto jsonSong : jsonSongs) {
+            auto path = ghc::filesystem::path(jsonSong["path"].as_string());
+
+            SongInfo song = {
+                .path = path,
+                .songName = jsonSong["songName"].as_string(),
+                .authorName = jsonSong["authorName"].as_string(),
+                .songUrl = jsonSong["songUrl"].as_string(),
+                .fileSize = jsonSong["fileSize"].as_double()
+            };
+            songs.push_back(song);
+        }
+
+        return NongData {
+            .active = ghc::filesystem::path(value["active"].as_string()),
+            .defaultPath = ghc::filesystem::path(value["defaultPath"].as_string()),
+            .songs = songs
         };
     }
 
-    static json::Value to_json(SongInfo const& value) {
-        auto obj = json::Object();
-        obj["path"] = value.path.string();
-        obj["songName"] = value.songName;
-        obj["authorName"] = value.authorName;
-        obj["selected"] = value.selected;
-        return obj;
-    }
-};
-
-template<>
-struct json::Serialize<std::vector<SongInfo>> {
-    static std::vector<SongInfo> from_json(json::Array const& values) {
-        std::vector<SongInfo> ret;
-        for (auto jsonValue : values) {
-            SongInfo song {
-                .path = ghc::filesystem::path(jsonValue["path"].as_string()),
-                .songName = jsonValue["songName"].as_string(),
-                .authorName = jsonValue["authorName"].as_string(),
-                .selected = jsonValue["selected"].as_bool()
-            };
-
-            ret.push_back(song);
-        }
-        return ret;
-    }
-
-    static json::Value to_json(std::vector<SongInfo> const& values) {
+    static json::Value to_json(NongData const& value) {
+        auto ret = json::Object();
         auto array = json::Array();
-        for (auto song : values) {
+        ret["active"] = value.active.string();
+        ret["defaultPath"] = value.defaultPath.string();
+        for (auto song : value.songs) {
             auto obj = json::Object();
             obj["path"] = song.path.string();
             obj["songName"] = song.songName;
             obj["authorName"] = song.authorName;
-            obj["selected"] = song.selected;
+            obj["songUrl"] = song.songUrl;
+            obj["fileSize"] = song.fileSize;
+
             array.push_back(obj);
         }
-        
-        return array;
+
+        ret["songs"] = array;
+        return ret;
     }
 };
