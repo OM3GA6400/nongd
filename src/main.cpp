@@ -108,20 +108,39 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 			labelText = "SongID: NONG  Size: " + sizeText;
 		}
 
-		label->setString(labelText.c_str());
+		if (label) {
+			label->setString(labelText.c_str());
+		}
 	}
 
 	void updateSongObject(SongInfoObject* song) {
+		SongInfo active;
+		auto nongData = NongManager::getNongs(song->m_songID);
+		for (auto nong : nongData.songs) {
+			if (nong.path == nongData.active) {
+				active = nong;
+				song->m_songName = nong.songName;
+				song->m_artistName = nong.authorName;
+				if (nong.songUrl != "local") {
+					song->m_songURL = nong.songUrl;
+				}
+			}
+		}
 		CustomSongWidget::updateSongObject(song);
 		if (auto found = this->getChildByID("song-name-menu")) {
 			this->updateSongNameLabel(song->m_songName);
 			return;
 		}
 		this->addMenuItemLabel(song->m_songName, song->m_songID);
+		if (active.path == nongData.defaultPath) {
+			this->updateIDAndSizeLabel(active, song->m_songID);
+		} else {
+			this->updateIDAndSizeLabel(active);
+		}
 	}
 
 	void addNongLayer(CCObject* target) {
-		auto popup = NongPopup::create(target->getTag());
+		auto popup = NongPopup::create(target->getTag(), this);
 		popup->m_noElasticity = true;
 		popup->show();
 	}

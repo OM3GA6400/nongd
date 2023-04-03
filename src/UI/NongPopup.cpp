@@ -1,7 +1,8 @@
 #include "NongPopup.hpp"
 
-bool NongPopup::setup(int songID) {
+bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->m_songID = songID;
+    this->m_parentWidget = parent;
     auto winSize = CCDirector::sharedDirector()->getWinSize();
 
     // convenience function provided by Popup 
@@ -30,10 +31,10 @@ void NongPopup::createAddButton() {
     this->addChild(m_addButtonMenu);
 }
 
-NongPopup* NongPopup::create(int songID) {
+NongPopup* NongPopup::create(int songID, CustomSongWidget* parent) {
     auto ret = new NongPopup();
     auto size = ret->getPopupSize();
-    if (ret && ret->init(size.width, size.height, songID)) {
+    if (ret && ret->init(size.width, size.height, songID, parent)) {
         ret->autorelease();
         return ret;
     }
@@ -146,6 +147,18 @@ void NongPopup::setActiveSong(SongInfo const& song) {
     this->m_songs.active = song.path;
 
     this->saveSongsToJson();
+    this->m_parentWidget->m_songInfo->m_artistName = song.authorName;
+    this->m_parentWidget->m_songInfo->m_songName = song.songName;
+    if (song.songUrl != "local") {
+        this->m_parentWidget->m_songInfo->m_songURL = song.songUrl;
+    }
+    this->m_parentWidget->updateSongObject(this->m_parentWidget->m_songInfo);
+    if (this->m_songs.defaultPath == song.path) {
+        this->updateParentSizeAndIDLabel(song, this->m_songID);
+    } else {
+        this->updateParentSizeAndIDLabel(song);
+    }
+
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
     CC_SAFE_DELETE(m_listLayer);
@@ -183,3 +196,16 @@ void NongPopup::deleteSong(SongInfo const& song) {
     this->setSongs();
     this->createList();
 }
+
+void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
+		auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("id-and-size-label"));
+		auto sizeText = NongManager::getFormattedSize(song);
+		std::string labelText;
+		if (songID != 0) {
+			labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
+		} else {
+			labelText = "SongID: NONG  Size: " + sizeText;
+		}
+
+		label->setString(labelText.c_str());
+	}
