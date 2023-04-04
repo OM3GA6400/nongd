@@ -102,7 +102,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 		auto label = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
 		label->limitLabelWidth(220.f, 0.8f, 0.1f);
-		auto songNameMenuLabel = CCMenuItemLabel::create(
+		auto songNameMenuLabel = CCMenuItemSpriteExtra::create(
 			label,
 			this,
 			menu_selector(MyCustomSongWidget::addNongLayer)
@@ -123,9 +123,9 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 	void updateSongNameLabel(std::string const& text) {
 		auto menu = this->getChildByID("song-name-menu");
-		auto labelMenuItem = typeinfo_cast<CCMenuItemLabel*>(menu->getChildByID("song-name-label"));
-		labelMenuItem->setString(text.c_str());
+		auto labelMenuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("song-name-label"));
 		auto child = typeinfo_cast<CCLabelBMFont*>(labelMenuItem->getChildren()->objectAtIndex(0));
+		child->setString(text.c_str());
 		child->limitLabelWidth(220.f, 0.8f, 0.1f);
 		auto labelScale = child->getScale();
 		labelMenuItem->setContentSize({ 220.f, labelScale * 30 });
