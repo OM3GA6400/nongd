@@ -16,6 +16,7 @@ class NongPopup : public Popup<int, CustomSongWidget*> {
 protected:
     CustomSongWidget* m_parentWidget;
     CCMenu* m_addButtonMenu;
+    CCMenu* m_fetchSongHubMenu;
     CCLayer* m_listLayer;
     ListView* m_list;
     int m_songID;
@@ -35,10 +36,14 @@ protected:
     CCSize getListSize() const;
 
     void createAddButton();
+    void createFetchSongHubMenu();
 
     void openAddPopup(CCObject*);
+    void fetchSongHub(CCObject*);
 
     void updateParentSizeAndIDLabel(SongInfo const& song, int songID = 0);
+
+    void sfhCallback(bool status);
 public:
     static NongPopup* create(int songID, CustomSongWidget* parent);
     void setActiveSong(SongInfo const& song);

@@ -138,3 +138,76 @@ bool NongManager::checkIfNongsExist(int songID) {
     if (data.songs.size() == 1) return false;
     return true;
 }
+
+void NongManager::fetchSFH(int songID, std::function<void(bool)> callback) {
+    std::string url = "https://songfilehub.com/api/v1/nongs?id=" + std::to_string(songID);
+    web::AsyncWebRequest()
+        .fetch(url)
+        .text()
+        .then([callback, songID](json::Value const& data) {
+            std::vector<SFHItem> ret;
+            if (!data.contains("songs") || !data["songs"].is_array()) {
+                callback(false);
+            }
+            auto songs = data["songs"].as_array();
+            for (auto const& song : songs) {
+                SFHItem item = {
+                    .songName = song["songName"].as_string(),
+                    .downloadUrl = song["downloadUrl"].as_string(),
+                    .levelName = song["levelName"].as_string(),
+                    .songURL = song["songURL"].is_string() ? song["songURL"].as_string() : ""
+                };
+                ret.push_back(item);
+            }
+            NongManager::addNongsFromSFH(ret, songID);
+            callback(true);
+        })
+        .expect([callback](std::string const& error) {
+            callback(false);
+        });
+}
+
+void NongManager::addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
+    auto nongsPath = Mod::get()->getSaveDir().append("nongs");
+    if (!ghc::filesystem::exists(nongsPath)) {
+        ghc::filesystem::create_directory(nongsPath);
+    }
+    auto nongs = NongManager::getNongs(songID);
+    for (auto sfhSong : songs) {
+        bool shouldSkip = false;
+        auto path = nongsPath;
+        path.append(std::to_string(songID) + ".mp3");
+        for (auto& localSong : nongs.songs) {
+            if (localSong.songUrl == sfhSong.downloadUrl) {
+                shouldSkip = true;
+                break;
+            }
+        }
+        if (shouldSkip) {
+            continue;
+        }
+        std::string songName;
+        std::string artistName;
+        std::stringstream ss;
+        ss << sfhSong.songName;
+        std::string part;
+        size_t i = 0;
+        while (std::getline(ss, part, '-')) {
+            if (i == 0) {
+                artistName = part;
+            } else {
+                songName = part;
+            }
+            i++;
+        }
+        SongInfo song = {
+            .path = path,
+            .songName = songName + " (" + sfhSong.levelName + ")",
+            .authorName = artistName,
+            .songUrl = sfhSong.downloadUrl
+        };
+        nongs.songs.push_back(song);
+    }
+
+    NongManager::saveNongs(nongs, songID);
+}

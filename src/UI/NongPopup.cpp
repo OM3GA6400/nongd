@@ -13,6 +13,7 @@ bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->setSongs();
     this->createList();
     this->createAddButton();
+    // this->createFetchSongHubMenu();
     return true;
 }
 
@@ -29,6 +30,22 @@ void NongPopup::createAddButton() {
     this->m_addButtonMenu->addChild(addButton);
     this->m_addButtonMenu->setPosition(ccp(524.5f, 29.f));
     this->addChild(m_addButtonMenu);
+}
+
+void NongPopup::createFetchSongHubMenu() {
+    auto menu = CCMenu::create();
+    menu->setID("fetch-song-hub-menu");
+    auto fetchButton = CCMenuItemSpriteExtra::create(
+        CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png"),
+        this,
+        nullptr
+    );
+    fetchButton->setID("fetch-song-hub-button");
+
+    menu->addChild(fetchButton);
+    menu->setPosition(ccp(40.5f, 29.f));
+    this->m_fetchSongHubMenu = menu;
+    this->addChild(menu);
 }
 
 NongPopup* NongPopup::create(int songID, CustomSongWidget* parent) {
@@ -198,15 +215,44 @@ void NongPopup::deleteSong(SongInfo const& song) {
 }
 
 void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
-		auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
-		auto sizeText = NongManager::getFormattedSize(song);
-		std::string labelText;
-		if (songID != 0) {
-			labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
-		} else {
-			labelText = "SongID: NONG  Size: " + sizeText;
-		}
-        if (label) {
-		    label->setString(labelText.c_str());
+    auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
+    auto sizeText = NongManager::getFormattedSize(song);
+    std::string labelText;
+    if (songID != 0) {
+        labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
+    } else {
+        labelText = "SongID: NONG  Size: " + sizeText;
+    }
+    if (label) {
+        label->setString(labelText.c_str());
+    }
+}
+
+void NongPopup::fetchSongHub(CCObject*) {
+    createQuickPopup(
+        "Fetch Song File Hub content", 
+        "Do you want to fetch <cl>Song File Hub</c> content for " + std::to_string(this->m_songID), 
+        "No", "Yes",
+        [this](auto, bool btn2) {
+            if (btn2) {
+                NongManager::fetchSFH(this->m_songID, [this](bool result) {
+                    this->sfhCallback(result);
+                });
+            }
         }
-	}
+    );
+}
+
+void NongPopup::sfhCallback(bool result) {
+    if (result) {
+        FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
+        this->m_listLayer->removeAllChildrenWithCleanup(true);
+        this->removeChild(m_listLayer);
+        CC_SAFE_DELETE(m_listLayer);
+        this->setSongs();
+        this->createList();
+        return;
+    }
+
+    FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
+}
