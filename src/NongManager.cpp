@@ -133,6 +133,10 @@ ghc::filesystem::path NongManager::getJsonPath(int songID) {
 }
 
 bool NongManager::checkIfNongsExist(int songID) {
+    auto nongData = Mod::get()->getSaveDir().append("nong_data");
+    if (!ghc::filesystem::exists(nongData)) {
+        ghc::filesystem::create_directory(nongData);
+    }
     auto path = NongManager::getJsonPath(songID);
     if (!ghc::filesystem::exists(path)) return false;
 
