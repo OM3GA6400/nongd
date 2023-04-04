@@ -4,15 +4,6 @@
 
 > **NOTE**: This mod is still in very early development, I'm still figuring out Geode so this will take a while. The README here is a proof of concept, basically what I want to achieve with this mod.
 
-> **ANOTHER NOTE**: This mod only works with a fork of Geode that has CustomSongWidget::init() in the bindings and the string ids set for the layer. These changes are in a PR I submitted to the Geode team, and I'm waiting for them to put it in the game. Meanwhile, you can add the following to your GEODE_FOLDER/bindings/GeometryDash.bro, and then [compile Geode yourself using VSCode (step 5 onwards, since you already have Geode on your computer)](https://docs.geode-sdk.org/source/building#recommended-way-for-normal-people)
-> ```
-> ... (You have to find this class in the file, and add the bool init(...) line)
-> class CustomSongWidget : cocos2d::CCNode, MusicDownloadDelegate, FLAlertLayerProtocol {
-> bool init(SongInfoObject*, LevelSettingsObject*, bool, bool, bool, bool, bool hideBackground) = win 0x685b0; // just add this line somewhere in the class
-> ...
-> }
-> ```
-
 NONGD is a song manager for Geometry Dash. It swaps newgrounds songs with their NONG counterparts.
 
 ## What is NONG?
