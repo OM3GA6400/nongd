@@ -147,6 +147,18 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	}
 
 	void updateSongObject(SongInfoObject* song) {
+		if (!NongManager::checkIfNongsExist(songInfo->m_songID)) {
+			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(songInfo->m_songID));
+
+			SongInfo defaultSong = {
+				.path = ghc::filesystem::path(strPath),
+				.songName = songInfo->m_songName,
+				.authorName = songInfo->m_artistName,
+				.songUrl = songInfo->m_songURL,
+			};
+
+			NongManager::createDefaultSongIfNull(defaultSong, songInfo->m_songID);
+		}
 		SongInfo active;
 		auto nongData = NongManager::getNongs(song->m_songID);
 		for (auto nong : nongData.songs) {
