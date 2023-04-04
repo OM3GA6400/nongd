@@ -66,6 +66,11 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 			}
 		}
 
+		if (nong.songUrl != "local" && !ghc::filesystem::exists(nong.path)) {
+			auto menu = this->getChildByID("buttons-menu");
+			menu->getChildByID("download-button")->setVisible(true);
+		}
+
 		this->m_songInfo->m_artistName = nong.authorName;
 		this->m_songInfo->m_songName = nong.songName;
 		this->updateSongObject(this->m_songInfo);
@@ -110,13 +115,17 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		songNameMenuLabel->setTag(songID);
 		// I am not even gonna try and understand why this works, but this places the label perfectly in the menu
 		auto labelScale = label->getScale();
-		songNameMenuLabel->setContentSize({ 220.f, labelScale * 30 });
 		songNameMenuLabel->setID("song-name-label");
 		songNameMenuLabel->setPosition(ccp(0.f, 0.f));
 		songNameMenuLabel->setAnchorPoint(ccp(0.f, 0.5f));
 		menu->addChild(songNameMenuLabel);
 		menu->setContentSize(ccp(220.f, 25.f));
 		menu->setPosition(ccp(-140.f, 27.5f));
+		auto layout = RowLayout::create();
+		layout->setAxisAlignment(AxisAlignment::Start);
+		layout->setAutoScale(false);
+		songNameMenuLabel->setLayout(layout);
+		songNameMenuLabel->setContentSize({ 220.f, labelScale * 30 });
 
 		this->addChild(menu);
 	}
@@ -129,6 +138,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		child->limitLabelWidth(220.f, 0.8f, 0.1f);
 		auto labelScale = child->getScale();
 		labelMenuItem->setContentSize({ 220.f, labelScale * 30 });
+		labelMenuItem->updateLayout();
 	}
 
 	void updateIDAndSizeLabel(SongInfo const& song, int songID = 0) {
@@ -147,17 +157,17 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	}
 
 	void updateSongObject(SongInfoObject* song) {
-		if (!NongManager::checkIfNongsExist(songInfo->m_songID)) {
-			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(songInfo->m_songID));
+		if (!NongManager::checkIfNongsExist(song->m_songID)) {
+			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
 
 			SongInfo defaultSong = {
 				.path = ghc::filesystem::path(strPath),
-				.songName = songInfo->m_songName,
-				.authorName = songInfo->m_artistName,
-				.songUrl = songInfo->m_songURL,
+				.songName = song->m_songName,
+				.authorName = song->m_artistName,
+				.songUrl = song->m_songURL,
 			};
 
-			NongManager::createDefaultSongIfNull(defaultSong, songInfo->m_songID);
+			NongManager::createDefaultSongIfNull(defaultSong, song->m_songID);
 		}
 		SongInfo active;
 		auto nongData = NongManager::getNongs(song->m_songID);

@@ -37,7 +37,7 @@ std::vector<SongInfo> NongManager::validateNongs(int songID) {
     std::vector<SongInfo> validSongs;
 
     for (auto &song : currentData.songs) {
-        if (!ghc::filesystem::exists(song.path) && song.path != currentData.defaultPath) {
+        if (!ghc::filesystem::exists(song.path) && currentData.defaultPath != song.path) {
             invalidSongs.push_back(song);
             if (song.path == currentData.active) {
                 currentData.active = currentData.defaultPath;
@@ -143,7 +143,7 @@ void NongManager::fetchSFH(int songID, std::function<void(bool)> callback) {
     std::string url = "https://songfilehub.com/api/v1/nongs?id=" + std::to_string(songID);
     web::AsyncWebRequest()
         .fetch(url)
-        .text()
+        .json()
         .then([callback, songID](json::Value const& data) {
             std::vector<SFHItem> ret;
             if (!data.contains("songs") || !data["songs"].is_array()) {
@@ -154,8 +154,8 @@ void NongManager::fetchSFH(int songID, std::function<void(bool)> callback) {
                 SFHItem item = {
                     .songName = song["songName"].as_string(),
                     .downloadUrl = song["downloadUrl"].as_string(),
-                    .levelName = song["levelName"].as_string(),
-                    .songURL = song["songURL"].is_string() ? song["songURL"].as_string() : ""
+                    .levelName = song.contains("levelNameMobile") && song["levelNameMobile"].is_string() ? song["levelNameMobile"].as_string() : "",
+                    .songURL = song.contains("songURL") && song["songURL"].is_string() ? song["songURL"].as_string() : ""
                 };
                 ret.push_back(item);
             }
@@ -173,10 +173,15 @@ void NongManager::addNongsFromSFH(std::vector<SFHItem> const& songs, int songID)
         ghc::filesystem::create_directory(nongsPath);
     }
     auto nongs = NongManager::getNongs(songID);
+    int index = 1;
     for (auto sfhSong : songs) {
         bool shouldSkip = false;
         auto path = nongsPath;
         path.append(std::to_string(songID) + ".mp3");
+        if (ghc::filesystem::exists(path)) {
+            path = nongsPath;
+            path.append(std::to_string(songID) + "_" + sfhSong.levelName + ".mp3");
+        }
         for (auto& localSong : nongs.songs) {
             if (localSong.songUrl == sfhSong.downloadUrl) {
                 shouldSkip = true;
@@ -195,19 +200,48 @@ void NongManager::addNongsFromSFH(std::vector<SFHItem> const& songs, int songID)
         while (std::getline(ss, part, '-')) {
             if (i == 0) {
                 artistName = part;
+                NongManager::rtrim(artistName);
             } else {
                 songName = part;
+                NongManager::ltrim(songName);
             }
             i++;
         }
+
         SongInfo song = {
             .path = path,
-            .songName = songName + " (" + sfhSong.levelName + ")",
+            .songName = songName,
             .authorName = artistName,
             .songUrl = sfhSong.downloadUrl
         };
+
+        if (!web::fetchFile(song.songUrl, song.path)) {
+            // failed to download file, skip the songo
+            continue;
+        }
+
+        if (sfhSong.levelName != "") {
+            song.songName += " (" + sfhSong.levelName + ")";
+        }
         nongs.songs.push_back(song);
     }
 
     NongManager::saveNongs(nongs, songID);
+}
+
+void NongManager::ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }));
+}
+
+void NongManager::rtrim(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }).base(), s.end());
+}
+
+void NongManager::trim(std::string &s) {
+    NongManager::rtrim(s);
+    NongManager::ltrim(s);
 }

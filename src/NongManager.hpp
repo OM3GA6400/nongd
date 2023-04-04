@@ -15,6 +15,11 @@ class NongManager {
 private:
     static ghc::filesystem::path getJsonPath(int songID);
     static void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID);
+
+    // thank you StackOverflow, very cool
+    static inline void ltrim(std::string &s);
+    static inline void rtrim(std::string &s);
+    static inline void trim(std::string &s);
 public:
     static void addNong(SongInfo const& song, int songID);
     static void deleteNong(SongInfo const& song, int songID);

@@ -13,7 +13,7 @@ bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->setSongs();
     this->createList();
     this->createAddButton();
-    // this->createFetchSongHubMenu();
+    this->createFetchSongHubMenu();
     return true;
 }
 
@@ -38,7 +38,7 @@ void NongPopup::createFetchSongHubMenu() {
     auto fetchButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png"),
         this,
-        nullptr
+        menu_selector(NongPopup::fetchSongHub)
     );
     fetchButton->setID("fetch-song-hub-button");
 
