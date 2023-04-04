@@ -16,12 +16,14 @@ NONGs have always been a hassle to manage, because some level creators use popul
 
 NONGD stands for **Not On NewGrounds, Duh**. It automates the process of swapping NONGs with their Newgrounds counterparts. It even allows for multiple NONGs on the same song ID.
 
-## How does it work? (how it will work, actually)
+## How does it work?
 
 You download your NONGs using your method of choice. After getting the mp3 file, you need to fill out the song name and author name. This is mostly for remembering which song is which.
 
 Note that where you place your songs is up to you. If you happen to move the song after you added in in NONGD, it will be automatically removed from the list when you interact with that song ID, and you will have to add it again to the list.
 
+Alternatively, you can download NONG data from Song File Hub, which is all tightly integrated inside the mod! It's still quite unoptimized, but i'm looking for a way to optimize it further.
+
 ## Where can I find the NONGD menu?
 
-So far the menu is in the level view page. I have plans to add it to the editor, wherever you have to interact with a song. I'll gladly accept suggestions on where it would be useful to have as a button. The mod itself is using only a few popups, so it won't be hard to implement in many places.
+The menu can be accessed by clicking on the song name label in either the level view screen or in the song select screen in the editor.
