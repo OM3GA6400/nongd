@@ -88,6 +88,9 @@ void NongManager::deleteNong(SongInfo const& song, int songID) {
             if (song.path == existingData.active) {
                 existingData.active = existingData.defaultPath;
             }
+            if (song.songUrl != "local" && existingData.defaultPath != song.path && ghc::filesystem::exists(song.path)) {
+                ghc::filesystem::remove(song.path);
+            }
             continue;
         }
         newSongs.push_back(savedSong);
@@ -177,10 +180,12 @@ void NongManager::addNongsFromSFH(std::vector<SFHItem> const& songs, int songID)
     for (auto sfhSong : songs) {
         bool shouldSkip = false;
         auto path = nongsPath;
-        path.append(std::to_string(songID) + ".mp3");
-        if (ghc::filesystem::exists(path)) {
+        path.append(std::to_string(songID) + "_" + sfhSong.levelName + ".mp3");
+        size_t index = 1;
+        while (ghc::filesystem::exists(path)) {
             path = nongsPath;
-            path.append(std::to_string(songID) + "_" + sfhSong.levelName + ".mp3");
+            path.append(std::to_string(songID) + "_" + sfhSong.levelName + "_" + std::to_string(index) + ".mp3");
+            index++;
         }
         for (auto& localSong : nongs.songs) {
             if (localSong.songUrl == sfhSong.downloadUrl) {
