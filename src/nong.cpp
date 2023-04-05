@@ -43,8 +43,8 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
         if (shouldSkip) {
             continue;
         }
-        std::string songName;
-        std::string artistName;
+        std::string songName = "-";
+        std::string artistName = "-";
         std::stringstream ss;
         ss << sfhSong.songName;
         std::string part;
@@ -58,6 +58,12 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
                 ltrim(songName);
             }
             i++;
+        }
+
+        if (songName == "-") {
+            auto temp = songName;
+            songName = artistName;
+            artistName = temp;
         }
 
         SongInfo song = {
@@ -230,15 +236,31 @@ namespace nong {
 
     void fetchSFH(int songID, std::function<void(bool)> callback) {
         std::string url = "https://songfilehub.com/api/v1/nongs?id=" + std::to_string(songID);
-        log::info("Request URL: {}", url);
         web::AsyncWebRequest()
             .fetch(url)
-            .json()
-            .then([callback, songID](json::Value const& data) {
-                log::info("Entered callback");
+            .text()
+            .then([callback, songID](std::string const& text) {
+                json::Value data;
+                try {
+                    data = json::parse(text);
+                } catch (json::JsonException e) {
+                    log::error("Failed to parse JSON from SFH, trying to remove potential Unicode characters. String: {}", text);
+                    auto copy = text;
+                    copy.erase(std::remove_if(copy.begin(), copy.end(), [](char x) {
+                        return static_cast<int>(x) < 0;
+                    }), copy.end());
+                    try {
+                        data = json::parse(copy);
+                    } catch (json::JsonException e) {
+                        log::error("Failed to parse JSON even after Unicode filtering. String: {}", copy);
+                        callback(false);
+                        return;
+                    }
+                }
                 std::vector<SFHItem> ret;
                 if (!data.contains("songs") || !data["songs"].is_array()) {
                     callback(false);
+                    return;
                 }
                 auto songs = data["songs"].as_array();
                 for (auto const& song : songs) {
@@ -254,13 +276,10 @@ namespace nong {
                 callback(true);
             })
             .expect([callback](std::string const& error) {
-                log::debug("oopsied");
                 callback(false);
             })
             .cancelled([callback](auto r) {
-                log::debug("oops");
                 callback(false);
             });
-        log::info("test");
     }
 }
