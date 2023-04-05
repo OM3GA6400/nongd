@@ -171,6 +171,9 @@ void NongManager::fetchSFH(int songID, std::function<void(bool)> callback) {
         })
         .expect([callback](std::string const& error) {
             callback(false);
+        })
+        .cancelled([callback](auto request) {
+            callback(false);
         });
 }
 
