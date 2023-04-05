@@ -4,7 +4,7 @@
 #include <Geode/utils/cocos.hpp>
 #include "UI/NongPopup.hpp"
 #include "types/SongInfo.hpp"
-#include "NongManager.hpp"
+#include "nong.hpp"
 
 #include <string>
 
@@ -31,7 +31,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		newLabel->setScale(0.4f);
 		this->addChild(newLabel);
 
-		if (!NongManager::checkIfNongsExist(songInfo->m_songID)) {
+		if (!nong::checkIfNongsExist(songInfo->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(songInfo->m_songID));
 
 			SongInfo defaultSong = {
@@ -41,10 +41,10 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 				.songUrl = songInfo->m_songURL,
 			};
 
-			NongManager::createDefaultSongIfNull(defaultSong, songInfo->m_songID);
+			nong::createDefaultSongIfNull(defaultSong, songInfo->m_songID);
 		}
 
-		auto invalidSongs = NongManager::validateNongs(songInfo->m_songID);
+		auto invalidSongs = nong::validateNongs(songInfo->m_songID);
 
 		if (invalidSongs.size() > 0) {
 			std::string invalidSongList = "";
@@ -58,7 +58,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 			alert->show();
 		}
 
-		this->m_fields->m_nongData = NongManager::getNongs(m_songInfo->m_songID);
+		this->m_fields->m_nongData = nong::getNongs(m_songInfo->m_songID);
 		SongInfo nong;
 		for (auto song : this->m_fields->m_nongData.songs) {
 			if (song.path == this->m_fields->m_nongData.active) {
@@ -143,7 +143,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 	void updateIDAndSizeLabel(SongInfo const& song, int songID = 0) {
 		auto label = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("nongd-id-and-size-label"));
-		auto sizeText = NongManager::getFormattedSize(song);
+		auto sizeText = nong::getFormattedSize(song);
 		std::string labelText;
 		if (songID != 0) {
 			labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
@@ -157,7 +157,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	}
 
 	void updateSongObject(SongInfoObject* song) {
-		if (!NongManager::checkIfNongsExist(song->m_songID)) {
+		if (!nong::checkIfNongsExist(song->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
 
 			SongInfo defaultSong = {
@@ -167,10 +167,10 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 				.songUrl = song->m_songURL,
 			};
 
-			NongManager::createDefaultSongIfNull(defaultSong, song->m_songID);
+			nong::createDefaultSongIfNull(defaultSong, song->m_songID);
 		}
 		SongInfo active;
-		auto nongData = NongManager::getNongs(song->m_songID);
+		auto nongData = nong::getNongs(song->m_songID);
 		for (auto nong : nongData.songs) {
 			if (nong.path == nongData.active) {
 				active = nong;
@@ -204,10 +204,10 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 // Keeping this here for good measure
 class $modify(MusicDownloadManager) {
 	gd::string pathForSong(int id) {
-		if (!NongManager::checkIfNongsExist(id)) {
+		if (!nong::checkIfNongsExist(id)) {
 			return MusicDownloadManager::pathForSong(id);
 		}
-		auto currentData = NongManager::getNongs(id);
+		auto currentData = nong::getNongs(id);
 		if (ghc::filesystem::exists(currentData.active)) {
 			return currentData.active.string();
 		}

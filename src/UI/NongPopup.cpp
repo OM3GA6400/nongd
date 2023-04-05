@@ -64,7 +64,7 @@ CCSize NongPopup::getPopupSize() const {
 }
 
 void NongPopup::setSongs() {
-    m_songs = NongManager::getNongs(this->m_songID);
+    m_songs = nong::getNongs(this->m_songID);
 }
 
 CCArray* NongPopup::createNongCells() {
@@ -93,7 +93,7 @@ SongInfo NongPopup::getActiveSong() {
 }
 
 void NongPopup::saveSongsToJson() {
-    NongManager::saveNongs(this->m_songs, this->m_songID);
+    nong::saveNongs(this->m_songs, this->m_songID);
 }
 
 CCSize NongPopup::getCellSize() const {
@@ -195,7 +195,7 @@ void NongPopup::addSong(SongInfo const& song) {
             return;
         }
     }
-    NongManager::addNong(song, this->m_songID);
+    nong::addNong(song, this->m_songID);
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -205,7 +205,7 @@ void NongPopup::addSong(SongInfo const& song) {
 }
 
 void NongPopup::deleteSong(SongInfo const& song) {
-    NongManager::deleteNong(song, this->m_songID);
+    nong::deleteNong(song, this->m_songID);
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -216,7 +216,7 @@ void NongPopup::deleteSong(SongInfo const& song) {
 
 void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
     auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
-    auto sizeText = NongManager::getFormattedSize(song);
+    auto sizeText = nong::getFormattedSize(song);
     std::string labelText;
     if (songID != 0) {
         labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
@@ -235,7 +235,7 @@ void NongPopup::fetchSongHub(CCObject*) {
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
-                NongManager::fetchSFH(this->m_songID, [this](bool result) {
+                nong::fetchSFH(this->m_songID, [this](bool result) {
                     this->sfhCallback(result);
                 });
             }

@@ -3,7 +3,7 @@
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
 #include "NongCell.hpp"
-#include "../NongManager.hpp"
+#include "../nong.hpp"
 #include "NongAddPopup.hpp"
 #include <vector>
 #include <fstream>
