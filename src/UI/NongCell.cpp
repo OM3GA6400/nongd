@@ -60,26 +60,28 @@ bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, b
     this->m_songInfoLayer = CCLayer::create();
 
     this->m_songNameLabel = CCLabelBMFont::create(m_songInfo.songName.c_str(), "bigFont.fnt");
-    this->m_songNameLabel->setAnchorPoint({0, 0});
-    this->m_songNameLabel->setPosition(ccp(14.f, 28.f));
-    this->m_songNameLabel->setScale(0.8f);
-    this->m_songNameLabel->limitLabelWidth(200.f, 0.8f, 0.1f);
+    this->m_songNameLabel->limitLabelWidth(240.f, 0.8f, 0.1f);
 
     if (selected) {
         this->m_songNameLabel->setColor(ccc3(188, 254, 206));
     }
 
     this->m_authorNameLabel = CCLabelBMFont::create(m_songInfo.authorName.c_str(), "goldFont.fnt");
-    this->m_authorNameLabel->setAnchorPoint({0, 0});
-    this->m_authorNameLabel->setPosition(ccp(14.f, 9.f));
-    this->m_authorNameLabel->setScale(0.7f);
-    this->m_authorNameLabel->limitLabelWidth(200.f, 0.7f, 0.1f);
+    this->m_authorNameLabel->limitLabelWidth(240.f, 0.7f, 0.1f);
     this->m_authorNameLabel->setID("author-name");
     this->m_songNameLabel->setID("song-name");
 
     this->m_songInfoLayer->addChild(this->m_authorNameLabel);
     this->m_songInfoLayer->addChild(this->m_songNameLabel);
     this->m_songInfoLayer->setID("song-info");
+    auto layout = ColumnLayout::create();
+    layout->setAutoScale(false);
+    layout->setAxisAlignment(AxisAlignment::Even);
+    layout->setCrossAxisLineAlignment(AxisAlignment::Start);
+    this->m_songInfoLayer->setContentSize(ccp(240.f, this->getContentSize().height - 6.f));
+    this->m_songInfoLayer->setAnchorPoint(ccp(0.f, 0.f));
+    this->m_songInfoLayer->setPosition(ccp(12.f, 1.5f));
+    this->m_songInfoLayer->setLayout(layout);
 
     this->addChild(m_songInfoLayer);
     return true;
