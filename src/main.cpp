@@ -53,9 +53,12 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 			}
 
 			invalidSongList = invalidSongList.substr(0, invalidSongList.size() - 2);
-			auto alert = FLAlertLayer::create("Invalid NONGs", "The NONGs [<cr>" + invalidSongList + "</c>] have been deleted, because their paths were invalid.", "Ok");
-			alert->m_scene = this;
-			alert->show();
+			// If anyone asks this was mat's idea
+			Loader::get()->queueInGDThread([this, invalidSongList]() {
+				auto alert = FLAlertLayer::create("Invalid NONGs", "The NONGs [<cr>" + invalidSongList + "</c>] have been deleted, because their paths were invalid.", "Ok");
+				alert->m_scene = this->getParent();
+				alert->show();
+			});
 		}
 
 		this->m_fields->m_nongData = nong::getNongs(m_songInfo->m_songID);
