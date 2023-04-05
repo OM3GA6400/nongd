@@ -8,8 +8,6 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-#include <locale>
-#include <codecvt>
 #include <algorithm>
 
 using namespace geode::prelude;

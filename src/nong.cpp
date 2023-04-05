@@ -24,7 +24,7 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
     }
     auto nongs = nong::getNongs(songID);
     int index = 1;
-    for (auto sfhSong : songs) {
+    for (auto const& sfhSong : songs) {
         bool shouldSkip = false;
         auto path = nongsPath;
         path.append(std::to_string(songID) + "_" + sfhSong.levelName + ".mp3");
@@ -43,10 +43,23 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
         if (shouldSkip) {
             continue;
         }
+
+        auto sfhSongName = sfhSong.songName;
+        trim(sfhSongName);
+
+        if (sfhSongName.find_first_of("-") == std::string::npos) {
+            // probably dash doesn't exist because of unicode filtering, try to insert it by hand
+            for (size_t i = 0; i < sfhSongName.size() - 1; i++) {
+                if (sfhSongName.at(i) == ' ' && sfhSongName.at(i + 1) == ' ') {
+                    sfhSongName.insert(i + 1, "-");
+                }
+            }
+        }
+
         std::string songName = "-";
         std::string artistName = "-";
         std::stringstream ss;
-        ss << sfhSong.songName;
+        ss << sfhSongName;
         std::string part;
         size_t i = 0;
         while (std::getline(ss, part, '-')) {
