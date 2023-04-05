@@ -42,6 +42,7 @@ protected:
     void fetchSongHub(CCObject*);
 
     void updateParentSizeAndIDLabel(SongInfo const& song, int songID = 0);
+    void updateParentWidget(SongInfo const& song);
 
     void sfhCallback(bool status);
 public:

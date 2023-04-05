@@ -164,17 +164,8 @@ void NongPopup::setActiveSong(SongInfo const& song) {
     this->m_songs.active = song.path;
 
     this->saveSongsToJson();
-    this->m_parentWidget->m_songInfo->m_artistName = song.authorName;
-    this->m_parentWidget->m_songInfo->m_songName = song.songName;
-    if (song.songUrl != "local") {
-        this->m_parentWidget->m_songInfo->m_songURL = song.songUrl;
-    }
-    this->m_parentWidget->updateSongObject(this->m_parentWidget->m_songInfo);
-    if (this->m_songs.defaultPath == song.path) {
-        this->updateParentSizeAndIDLabel(song, this->m_songID);
-    } else {
-        this->updateParentSizeAndIDLabel(song);
-    }
+    
+    this->updateParentWidget(song);
 
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -196,6 +187,7 @@ void NongPopup::addSong(SongInfo const& song) {
         }
     }
     nong::addNong(song, this->m_songID);
+    this->updateParentWidget(song);
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -204,8 +196,23 @@ void NongPopup::addSong(SongInfo const& song) {
     this->createList();
 }
 
+void NongPopup::updateParentWidget(SongInfo const& song) {
+    this->m_parentWidget->m_songInfo->m_artistName = song.authorName;
+    this->m_parentWidget->m_songInfo->m_songName = song.songName;
+    if (song.songUrl != "local") {
+        this->m_parentWidget->m_songInfo->m_songURL = song.songUrl;
+    }
+    this->m_parentWidget->updateSongObject(this->m_parentWidget->m_songInfo);
+    if (this->m_songs.defaultPath == song.path) {
+        this->updateParentSizeAndIDLabel(song, this->m_songID);
+    } else {
+        this->updateParentSizeAndIDLabel(song);
+    }
+}
+
 void NongPopup::deleteSong(SongInfo const& song) {
     nong::deleteNong(song, this->m_songID);
+    this->updateParentWidget(nong::getActiveNong(this->m_songID));
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
@@ -230,8 +237,8 @@ void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
 
 void NongPopup::fetchSongHub(CCObject*) {
     createQuickPopup(
-        "Fetch Song File Hub content", 
-        "Do you want to fetch <cl>Song File Hub</c> content for " + std::to_string(this->m_songID), 
+        "Fetch SFH", 
+        "Do you want to fetch <cl>Song File Hub</c> content for <cy>" + std::to_string(this->m_songID) + "</c>?", 
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
