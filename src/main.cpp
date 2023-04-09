@@ -12,12 +12,17 @@ using namespace geode::prelude;
 
 class $modify(MyCustomSongWidget, CustomSongWidget) {
 	NongData m_nongData;
+	int m_nongdSong;
 
 	bool init(SongInfoObject* songInfo, LevelSettingsObject* levelSettings, bool p2, bool p3, bool p4, bool p5, bool hideBackground) {
 		if (!CustomSongWidget::init(songInfo, levelSettings, p2, p3, p4, p5, hideBackground)) return false;
 
 		if (!this->getChildByID("song-name-label")) {
 			this->setStringIDs();
+		}
+
+		if (!songInfo) {
+			return true;
 		}
 
 		auto songNameLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("song-name-label"));
@@ -30,6 +35,8 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		newLabel->setPosition(ccp(0.f, -32.f));
 		newLabel->setScale(0.4f);
 		this->addChild(newLabel);
+
+		this->m_fields->m_nongdSong = songInfo->m_songID;
 
 		if (!nong::checkIfNongsExist(songInfo->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(songInfo->m_songID));
@@ -133,9 +140,10 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		this->addChild(menu);
 	}
 
-	void updateSongNameLabel(std::string const& text) {
+	void updateSongNameLabel(std::string const& text, int songID) {
 		auto menu = this->getChildByID("song-name-menu");
 		auto labelMenuItem = typeinfo_cast<CCMenuItemSpriteExtra*>(menu->getChildByID("song-name-label"));
+		labelMenuItem->setTag(songID);
 		auto child = typeinfo_cast<CCLabelBMFont*>(labelMenuItem->getChildren()->objectAtIndex(0));
 		child->setString(text.c_str());
 		child->limitLabelWidth(220.f, 0.8f, 0.1f);
@@ -160,6 +168,8 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	}
 
 	void updateSongObject(SongInfoObject* song) {
+		log::info("name: {}, id: {}", std::string(song->m_songName), song->m_songID);
+		this->m_fields->m_nongdSong = song->m_songID;
 		if (!nong::checkIfNongsExist(song->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
 
@@ -186,7 +196,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 		}
 		CustomSongWidget::updateSongObject(song);
 		if (auto found = this->getChildByID("song-name-menu")) {
-			this->updateSongNameLabel(song->m_songName);
+			this->updateSongNameLabel(song->m_songName, song->m_songID);
 		} else {
 			this->addMenuItemLabel(song->m_songName, song->m_songID);
 		}
