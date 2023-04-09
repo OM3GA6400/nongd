@@ -71,13 +71,13 @@ CCArray* NongPopup::createNongCells() {
     auto songs = CCArray::create();
     auto activeSong = this->getActiveSong();
 
-    songs->addObject(NongCell::create(activeSong, this, this->getCellSize(), true));
+    songs->addObject(NongCell::create(activeSong, this, this->getCellSize(), true, activeSong.path == this->m_songs.defaultPath));
 
     for (auto song : m_songs.songs) {
         if (m_songs.active == song.path) {
             continue;
         }
-        songs->addObject(NongCell::create(song, this, this->getCellSize(), false));
+        songs->addObject(NongCell::create(song, this, this->getCellSize(), false, song.path == this->m_songs.defaultPath));
     }
 
     return songs;
@@ -89,7 +89,14 @@ SongInfo NongPopup::getActiveSong() {
             return song;
         }
     }
-    throw std::exception("Yoy did bad");
+    
+    m_songs.active == m_songs.defaultPath;
+    nong::saveNongs(m_songs, this->m_songID);
+    for (auto song : m_songs.songs) {
+        if (song.path == m_songs.active) {
+            return song;
+        }
+    }
 }
 
 void NongPopup::saveSongsToJson() {
@@ -243,14 +250,17 @@ void NongPopup::fetchSongHub(CCObject*) {
         [this](auto, bool btn2) {
             if (btn2) {
                 nong::fetchSFH(this->m_songID, [this](bool result) {
-                    this->sfhCallback(result);
+                    this->onSFHFetched(result);
+                    nong::downloadSFH(this->m_songID, [](std::string name) {
+                        FLAlertLayer::create("Download failed", "Song download <cr>failed</c> for song <cy>" + name + "</c>", "Ok")->show();
+                    });
                 });
             }
         }
     );
 }
 
-void NongPopup::sfhCallback(bool result) {
+void NongPopup::onSFHFetched(bool result) {
     if (result) {
         FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
         this->m_listLayer->removeAllChildrenWithCleanup(true);
@@ -262,4 +272,8 @@ void NongPopup::sfhCallback(bool result) {
     }
 
     FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
+}
+
+int NongPopup::getSongID() {
+    return this->m_songID;
 }

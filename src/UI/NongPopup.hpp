@@ -14,12 +14,12 @@ using namespace geode::prelude;
 
 class NongPopup : public Popup<int, CustomSongWidget*> {
 protected:
+    int m_songID;
     CustomSongWidget* m_parentWidget;
     CCMenu* m_addButtonMenu;
     CCMenu* m_fetchSongHubMenu;
     CCLayer* m_listLayer;
     ListView* m_list;
-    int m_songID;
 
     NongData m_songs;
 
@@ -44,8 +44,9 @@ protected:
     void updateParentSizeAndIDLabel(SongInfo const& song, int songID = 0);
     void updateParentWidget(SongInfo const& song);
 
-    void sfhCallback(bool status);
+    void onSFHFetched(bool status);
 public:
+    int getSongID();
     static NongPopup* create(int songID, CustomSongWidget* parent);
     void setActiveSong(SongInfo const& song);
     void addSong(SongInfo const& song);

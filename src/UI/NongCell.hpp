@@ -27,11 +27,11 @@ protected:
 
     NongPopup* m_parentPopup;
 
-    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected);
+    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault);
 
     virtual void FLAlert_Clicked(FLAlertLayer*, bool btn2);
 public:
-    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected);
+    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault);
     void onSet(CCObject*);
     void deleteSong(CCObject*);
 };

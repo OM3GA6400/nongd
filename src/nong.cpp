@@ -27,13 +27,7 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
     for (auto const& sfhSong : songs) {
         bool shouldSkip = false;
         auto path = nongsPath;
-        path.append(std::to_string(songID) + "_" + sfhSong.levelName + ".mp3");
-        size_t index = 1;
-        while (ghc::filesystem::exists(path)) {
-            path = nongsPath;
-            path.append(std::to_string(songID) + "_" + sfhSong.levelName + "_" + std::to_string(index) + ".mp3");
-            index++;
-        }
+        path.append(std::to_string(songID) + "_" + sfhSong.levelName + "_" + sfhSong.songName + ".mp3");
         for (auto& localSong : nongs.songs) {
             if (localSong.songUrl == sfhSong.downloadUrl) {
                 shouldSkip = true;
@@ -85,11 +79,6 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
             .authorName = artistName,
             .songUrl = sfhSong.downloadUrl
         };
-
-        if (!web::fetchFile(song.songUrl, song.path)) {
-            // failed to download file, skip the songo
-            continue;
-        }
 
         if (sfhSong.levelName != "") {
             song.songName += " (" + sfhSong.levelName + ")";
@@ -289,10 +278,33 @@ namespace nong {
                 callback(true);
             })
             .expect([callback](std::string const& error) {
+                log::error(error);
                 callback(false);
             })
             .cancelled([callback](auto r) {
                 callback(false);
             });
+    }
+
+    void downloadSFH(int songID, std::function<void(std::string)> failedCallback) {
+        auto nongData = getNongs(songID);
+
+        for (auto const& song : nongData.songs) {
+            if (song.songUrl != "local" && !ghc::filesystem::exists(song.path)) {
+                web::AsyncWebRequest()
+                    .fetch(song.songUrl)
+                    .into(song.path)
+                    .then([](auto monostate){})
+                    .expect([failedCallback, song, songID](std::string const& error) {
+                        log::error(error);
+                        nong::deleteNong(song, songID);
+                        failedCallback(song.songName);
+                    })
+                    .cancelled([failedCallback, song, songID](auto req) {
+                        nong::deleteNong(song, songID);
+                        failedCallback(song.songName);
+                    });
+            }
+        }
     }
 }

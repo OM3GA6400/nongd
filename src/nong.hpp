@@ -98,6 +98,14 @@ namespace nong {
     void fetchSFH(int songID, std::function<void(bool)> callback);
 
     /**
+     * Downloads the SFH songs that have been saved to the songID json
+     * 
+     * @param songID the id of the song
+     * @param failedCallback a callback that takes the name of the song that will run if the song download fails or is cancelled
+    */
+    void downloadSFH(int songID, std::function<void(std::string)> failedCallback);
+
+    /**
      * Returns the JSON path for a songID
      * 
      * @param songID the id of the song

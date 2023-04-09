@@ -15,7 +15,7 @@ void NongListCell::draw() {
 
 // NongCell
 
-bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
+bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault) {
     if (!NongListCell::init(parentPopup, size)) return false;
 
     this->m_songInfo = info;
@@ -41,17 +41,20 @@ bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, b
     button->setAnchorPoint(ccp(0.5f, 0.5f));
     button->setID("set-button");
 
-    auto deleteButton = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png"),
-        this,
-        menu_selector(NongCell::deleteSong)
-    );
-    deleteButton->setID("delete-button");
-
     auto menu = CCMenu::create();
     menu->addChild(button);
-    menu->addChild(deleteButton);
-    deleteButton->setPositionX(53.f);
+
+    if (!isDefault) {
+        auto deleteButton = CCMenuItemSpriteExtra::create(
+            CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png"),
+            this,
+            menu_selector(NongCell::deleteSong)
+        );
+        deleteButton->setID("delete-button");
+        menu->addChild(deleteButton);
+        deleteButton->setPositionX(53.f);
+    }
+
     menu->setAnchorPoint(ccp(0, 0));
     menu->setPosition(ccp(320.f, 29.f));
     menu->setID("button-menu");
@@ -95,9 +98,9 @@ void NongCell::deleteSong(CCObject* target) {
     FLAlertLayer::create(this, "Are you sure?", "Are you sure you want to delete <cy>" + this->m_songInfo.songName + "</c> from your NONGs?", "No", "Yes")->show();
 }
 
-NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected) {
+NongCell* NongCell::create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault) {
     auto ret = new NongCell();
-    if (ret && ret->init(info, parentPopup, size, selected)) {
+    if (ret && ret->init(info, parentPopup, size, selected, isDefault)) {
         return ret;
     }
     CC_SAFE_DELETE(ret);
