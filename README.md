@@ -2,8 +2,6 @@
 
 <img src="logo.png" alt="NONGD logo" />
 
-> **NOTE**: This mod is still in very early development, I'm still figuring out Geode so this will take a while. The README here is a proof of concept, basically what I want to achieve with this mod.
-
 NONGD is a song manager for Geometry Dash. It swaps newgrounds songs with their NONG counterparts.
 
 ## What is NONG?
@@ -27,3 +25,7 @@ Alternatively, you can download NONG data from Song File Hub, which is all tight
 ## Where can I find the NONGD menu?
 
 The menu can be accessed by clicking on the song name label in either the level view screen or in the song select screen in the editor.
+
+## Details for mod makers
+
+NONGd makes some pretty heavy adjustments in CustomSongWidget. If you want to update labels in there, you will have to do an update for song-name-menu and nongd-id-and-size-label. song-name-menu is a CCMenuItemSpriteExtra which contains a label, and nongd-id-and-size-label is just a label. Their uses are pretty self explanatory I guess.
