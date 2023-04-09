@@ -83,7 +83,12 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 		this->m_songInfo->m_artistName = nong.authorName;
 		this->m_songInfo->m_songName = nong.songName;
-		this->updateSongObject(this->m_songInfo);
+		// this->updateSongObject(this->m_songInfo);
+		if (auto found = this->getChildByID("song-name-menu")) {
+			this->updateSongNameLabel(this->m_songInfo->m_songName, this->m_songInfo->m_songID);
+		} else {
+			this->addMenuItemLabel(this->m_songInfo->m_songName, this->m_songInfo->m_songID);
+		}
 		if (nong.path == this->m_fields->m_nongData.defaultPath) {
 			this->updateIDAndSizeLabel(nong, this->m_songInfo->m_songID);
 		} else {
