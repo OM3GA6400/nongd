@@ -1,6 +1,6 @@
 # NONGD
 
-<img src="logo.png" alt="NONGD logo" />
+<img src="./logo.png" alt="NONGD logo" />
 
 NONGD is a song manager for Geometry Dash. It swaps newgrounds songs with their NONG counterparts.
 
