@@ -90,7 +90,7 @@ SongInfo NongPopup::getActiveSong() {
         }
     }
     
-    m_songs.active == m_songs.defaultPath;
+    m_songs.active = m_songs.defaultPath;
     nong::saveNongs(m_songs, this->m_songID);
     for (auto song : m_songs.songs) {
         if (song.path == m_songs.active) {
@@ -98,7 +98,7 @@ SongInfo NongPopup::getActiveSong() {
         }
     }
 
-    throw std::exception("jesus christ what");
+    throw std::runtime_error("If you somehow reached this, good job.");
 }
 
 void NongPopup::saveSongsToJson() {

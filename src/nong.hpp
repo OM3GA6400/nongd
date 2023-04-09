@@ -113,7 +113,7 @@ namespace nong {
      * @param failed a callback that fires if the download fails or is cancelled. it takes the song data, and the error
     */
     void downloadSFH(SongInfo const& song, std::function<void(double)> progress, std::function<void(SongInfo const&, std::string const&)> failed);
-
+    
     /**
      * Returns the JSON path for a songID
      * 

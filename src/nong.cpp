@@ -110,9 +110,16 @@ namespace nong {
                 return song;
             }
         }
+        
+        nongs.active = nongs.defaultPath;
 
-        auto error = "NONGD error: no active nong is set for id " + std::to_string(songID);
-        throw std::exception(error.c_str());
+        for (auto &song : nongs.songs) {
+            if (song.path == nongs.active) {
+                return song;
+            }
+        }
+
+        throw std::runtime_error("If you somehow reached this, good job.");
     }
 
     /**
