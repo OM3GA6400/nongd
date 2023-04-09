@@ -154,6 +154,17 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 	void updateIDAndSizeLabel(SongInfo const& song, int songID = 0) {
 		auto label = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("nongd-id-and-size-label"));
+		auto normalLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("id-and-size-label"));
+		auto defaultPath = this->m_fields->m_nongData.defaultPath;
+
+		if (!ghc::filesystem::exists(song.path) && song.path == defaultPath) {
+			label->setVisible(false);
+			this->getChildByID("id-and-size-label")->setVisible(true);
+		} else if (normalLabel && normalLabel->isVisible()) {
+			normalLabel->setVisible(false);
+			label->setVisible(true);
+		}
+
 		auto sizeText = nong::getFormattedSize(song);
 		std::string labelText;
 		if (songID != 0) {
