@@ -127,7 +127,7 @@ namespace nong {
         std::vector<SongInfo> validSongs;
 
         for (auto &song : currentData.songs) {
-            if (!ghc::filesystem::exists(song.path) && currentData.defaultPath != song.path) {
+            if (!ghc::filesystem::exists(song.path) && currentData.defaultPath != song.path && song.songUrl == "local") {
                 invalidSongs.push_back(song);
                 if (song.path == currentData.active) {
                     currentData.active = currentData.defaultPath;
@@ -286,7 +286,7 @@ namespace nong {
             });
     }
 
-    void downloadSFH(int songID, std::function<void(std::string)> failedCallback) {
+    void downloadAllSFH(int songID, std::function<void(std::string)> failedCallback) {
         auto nongData = getNongs(songID);
 
         for (auto const& song : nongData.songs) {
@@ -297,14 +297,30 @@ namespace nong {
                     .then([](auto monostate){})
                     .expect([failedCallback, song, songID](std::string const& error) {
                         log::error(error);
-                        nong::deleteNong(song, songID);
                         failedCallback(song.songName);
                     })
                     .cancelled([failedCallback, song, songID](auto req) {
-                        nong::deleteNong(song, songID);
                         failedCallback(song.songName);
                     });
             }
         }
+    }
+
+    void downloadSFH(SongInfo const& song, std::function<void(double percentage)> progress, std::function<void(SongInfo const& song, std::string const& error)> failed) {
+        if (ghc::filesystem::exists(song.path)) {
+            return;
+        }
+        web::AsyncWebRequest()
+            .fetch(song.songUrl)
+            .into(song.path)
+            .then([progress](std::monostate state){
+                progress(100.f);
+            })
+            .expect([song, failed](std::string const& error) {
+                failed(song, error);
+            })
+            .cancelled([song, failed](auto request) {
+                failed(song, "The download was cancelled");
+            });
     }
 }

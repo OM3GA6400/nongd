@@ -97,6 +97,8 @@ SongInfo NongPopup::getActiveSong() {
             return song;
         }
     }
+
+    throw std::exception("jesus christ what");
 }
 
 void NongPopup::saveSongsToJson() {
@@ -168,6 +170,29 @@ void NongPopup::createList() {
 }
 
 void NongPopup::setActiveSong(SongInfo const& song) {
+    if (!ghc::filesystem::exists(song.path) && song.path != this->m_songs.defaultPath && song.songUrl != "local") {
+        auto loading = LoadingCircle::create();
+        loading->setParentLayer(this);
+        loading->setFade(true);
+        loading->show();
+        nong::downloadSFH(song, [this, song, loading](double progress) {
+            if (progress == 100.f) {
+                loading->fadeAndRemove();
+                this->updateParentSizeAndIDLabel(song);
+            }
+        },
+        [this, loading](SongInfo const& song, std::string const& error) {
+            loading->fadeAndRemove();
+            FLAlertLayer::create("Failed", "Failed to download song", "Ok")->show();
+
+            for (auto song : this->m_songs.songs) {
+                if (song.path == this->m_songs.defaultPath) {
+                    this->setActiveSong(song);
+                }
+            }
+        });
+    }
+
     this->m_songs.active = song.path;
 
     this->saveSongsToJson();
@@ -251,9 +276,9 @@ void NongPopup::fetchSongHub(CCObject*) {
             if (btn2) {
                 nong::fetchSFH(this->m_songID, [this](bool result) {
                     this->onSFHFetched(result);
-                    nong::downloadSFH(this->m_songID, [](std::string name) {
-                        FLAlertLayer::create("Download failed", "Song download <cr>failed</c> for song <cy>" + name + "</c>", "Ok")->show();
-                    });
+                    // nong::downloadAllSFH(this->m_songID, [](std::string name) {
+                    //     FLAlertLayer::create("Download failed", "Song download <cr>failed</c> for song <cy>" + name + "</c>", "Ok")->show();
+                    // });
                 });
             }
         }
