@@ -69,7 +69,7 @@ jobs:
     - name: Build
       run: |
         cd ${{ github.workspace }}/build
-        cmake --build . --config Release
+        cmake --build . --config RelWithDebInfo
     
     - uses: actions/upload-artifact@v3
       with:
