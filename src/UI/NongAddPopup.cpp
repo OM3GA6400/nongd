@@ -72,7 +72,6 @@ void NongAddPopup::openFile(CCObject* target) {
 void NongAddPopup::createSelectedSongLabel(const std::string& label) {
     if (auto label = this->m_containerLayer->getChildByID("selected-song-label")) {
         this->m_containerLayer->removeChild(label);
-        CC_SAFE_DELETE(this->m_selectedSongPath);
     }
 
     this->m_selectedSongPath = CCLabelBMFont::create(label.c_str(), "goldFont.fnt");

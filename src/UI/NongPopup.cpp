@@ -201,7 +201,7 @@ void NongPopup::setActiveSong(SongInfo const& song) {
 
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
-    CC_SAFE_DELETE(m_listLayer);
+    this->m_listLayer = nullptr;
     this->createList();
 }
 
@@ -223,7 +223,7 @@ void NongPopup::addSong(SongInfo const& song) {
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
-    CC_SAFE_DELETE(m_listLayer);
+    this->m_listLayer = nullptr;
     this->setSongs();
     this->createList();
 }
@@ -248,7 +248,7 @@ void NongPopup::deleteSong(SongInfo const& song) {
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->removeChild(m_listLayer);
-    CC_SAFE_DELETE(m_listLayer);
+    this->m_listLayer = nullptr;
     this->setSongs();
     this->createList();
 }
@@ -290,7 +290,7 @@ void NongPopup::onSFHFetched(bool result) {
         FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
         this->m_listLayer->removeAllChildrenWithCleanup(true);
         this->removeChild(m_listLayer);
-        CC_SAFE_DELETE(m_listLayer);
+        this->m_listLayer = nullptr;
         this->setSongs();
         this->createList();
         return;
