@@ -98,7 +98,9 @@ void NongAddPopup::createInputs() {
     this->m_songNameInput = CCTextInputNode::create(250.f, 20.f, "Song name", "bigFont.fnt");
     this->m_songNameInput->setID("song-name-input");
     this->m_songNameInput->setPosition(ccp(284.5f, 155.f));
-    this->m_songNameInput->ignoreAnchorPointForPosition(true);
+    this->m_songNameInput->ignoreAnchorPointForPosition(false);
+    this->m_songNameInput->m_textField->setAnchorPoint({ 0.5f, 0.5f });
+    this->m_songNameInput->m_placeholderLabel->setAnchorPoint({ 0.5f, 0.5f });
     this->m_songNameInput->setMaxLabelScale(0.7f);
     this->m_songNameInput->setLabelPlaceholderColor(ccc3(108, 153, 216));
     this->m_songNameInput->setMouseEnabled(true);
@@ -110,8 +112,10 @@ void NongAddPopup::createInputs() {
     this->m_artistNameInput = CCTextInputNode::create(250.f, 20.f, "Artist name", "bigFont.fnt");
     this->m_artistNameInput->setID("artist-name-input");
     this->m_artistNameInput->setPosition(ccp(284.5f, 110.f));
-    this->m_artistNameInput->ignoreAnchorPointForPosition(true);
+    this->m_artistNameInput->ignoreAnchorPointForPosition(false);
     this->m_artistNameInput->setMaxLabelScale(0.7f);
+    this->m_artistNameInput->m_textField->setAnchorPoint({ 0.5f, 0.5f });
+    this->m_artistNameInput->m_placeholderLabel->setAnchorPoint({ 0.5f, 0.5f });
     this->m_artistNameInput->setLabelPlaceholderColor(ccc3(108, 153, 216));
 
     auto bgSprite_artist = CCScale9Sprite::create(
