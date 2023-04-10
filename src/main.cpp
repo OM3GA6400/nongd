@@ -100,11 +100,14 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 		auto label = CCLabelBMFont::create(text.c_str(), "bigFont.fnt");
 		label->limitLabelWidth(220.f, 0.8f, 0.1f);
+		auto info = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+		info->setScale(0.5f);
 		auto songNameMenuLabel = CCMenuItemSpriteExtra::create(
 			label,
 			this,
 			menu_selector(MyCustomSongWidget::addNongLayer)
 		);
+		songNameMenuLabel->addChild(info);
 		songNameMenuLabel->setTag(songID);
 		// I am not even gonna try and understand why this works, but this places the label perfectly in the menu
 		auto labelScale = label->getScale();

@@ -171,17 +171,26 @@ void NongPopup::createList() {
 
 void NongPopup::setActiveSong(SongInfo const& song) {
     if (!ghc::filesystem::exists(song.path) && song.path != this->m_songs.defaultPath && song.songUrl != "local") {
+        this->setKeyboardEnabled(false);
+        this->setKeypadEnabled(false);
+        this->setMouseEnabled(false);
         auto loading = LoadingCircle::create();
         loading->setParentLayer(this);
         loading->setFade(true);
         loading->show();
         nong::downloadSFH(song, [this, song, loading](double progress) {
             if (progress == 100.f) {
+                this->setKeyboardEnabled(true);
+                this->setKeypadEnabled(true);
+                this->setMouseEnabled(true);
                 loading->fadeAndRemove();
                 this->updateParentSizeAndIDLabel(song);
             }
         },
         [this, loading](SongInfo const& song, std::string const& error) {
+            this->setKeyboardEnabled(true);
+            this->setKeypadEnabled(true);
+            this->setMouseEnabled(true);
             loading->fadeAndRemove();
             FLAlertLayer::create("Failed", "Failed to download song", "Ok")->show();
 
