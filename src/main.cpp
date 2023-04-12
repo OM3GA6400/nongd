@@ -14,12 +14,25 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	NongData m_nongData;
 	int m_nongdSong;
 
-	bool init(SongInfoObject* songInfo, LevelSettingsObject* levelSettings, bool p2, bool p3, bool p4, bool p5, bool hideBackground) {
-		if (!CustomSongWidget::init(songInfo, levelSettings, p2, p3, p4, p5, hideBackground)) return false;
+	bool m_hasDefaultSong = false;
+	bool m_firstRun = true;
+
+	bool init(SongInfoObject* songInfo, LevelSettingsObject* levelSettings, bool p2, bool p3, bool p4, bool hasDefaultSong, bool hideBackground) {
+		if (!CustomSongWidget::init(songInfo, levelSettings, p2, p3, p4, hasDefaultSong, hideBackground)) return false;
 
 		if (!songInfo) {
 			return true;
 		}
+
+		this->m_fields->m_firstRun = false;
+
+		if (hasDefaultSong) {
+			this->m_fields->m_hasDefaultSong = true;
+			this->updateSongObject(this->m_songInfo);
+			return true;
+		}
+
+		// log::info("b1: {}, b2: {}, b3: {}, b4: {}, hideBG: {}", p2, p3, p4, hasDefaultSong, hideBackground);
 
 		auto songNameLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("song-name-label"));
 		songNameLabel->setVisible(false);
@@ -74,6 +87,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 		this->m_songInfo->m_artistName = nong.authorName;
 		this->m_songInfo->m_songName = nong.songName;
+		this->updateSongObject(this->m_songInfo);
 		if (auto found = this->getChildByID("song-name-menu")) {
 			this->updateSongNameLabel(this->m_songInfo->m_songName, this->m_songInfo->m_songID);
 		} else {
@@ -159,8 +173,24 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 	}
 
 	void updateSongObject(SongInfoObject* song) {
-		log::info("name: {}, id: {}", std::string(song->m_songName), song->m_songID);
-		log::info("artist: {}", std::string(song->m_artistName));
+		// log::info("name: {}, id: {}", std::string(song->m_songName), song->m_songID);
+		// log::info("artist: {}", std::string(song->m_artistName));
+
+		if (this->m_fields->m_firstRun) {
+			CustomSongWidget::updateSongObject(song);
+			return;
+		}
+
+		if (this->m_fields->m_hasDefaultSong) {
+			CustomSongWidget::updateSongObject(song);
+			if (auto found = this->getChildByID("song-name-menu")) {
+				found->setVisible(false);
+				this->getChildByID("nongd-id-and-size-label")->setVisible(false);
+			}
+			this->getChildByID("id-and-size-label")->setVisible(true);
+			return;
+		}
+
 		this->m_fields->m_nongdSong = song->m_songID;
 		if (!nong::checkIfNongsExist(song->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
