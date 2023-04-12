@@ -249,23 +249,26 @@ namespace nong {
             .fetch(url)
             .text()
             .then([callback, songID](std::string const& text) {
+                auto copy = text;
+                copy.erase(std::remove_if(copy.begin(), copy.end(), [](char x) {
+                    return static_cast<int>(x) < 0;
+                }), copy.end());
                 json::Value data;
-                try {
-                    data = json::parse(text);
-                } catch (json::JsonException e) {
-                    log::error("Failed to parse JSON from SFH, trying to remove potential Unicode characters. String: {}", text);
-                    auto copy = text;
-                    copy.erase(std::remove_if(copy.begin(), copy.end(), [](char x) {
-                        return static_cast<int>(x) < 0;
-                    }), copy.end());
-                    try {
-                        data = json::parse(copy);
-                    } catch (json::JsonException e) {
-                        log::error("Failed to parse JSON even after Unicode filtering. String: {}", copy);
-                        callback(false);
-                        return;
-                    }
-                }
+                data = json::parse(copy);
+                // } catch (json::JsonException e) {
+                //     log::error("Failed to parse JSON from SFH, trying to remove potential Unicode characters. String: {}", text);
+                //     auto copy = text;
+                //     copy.erase(std::remove_if(copy.begin(), copy.end(), [](char x) {
+                //         return static_cast<int>(x) < 0;
+                //     }), copy.end());
+                //     try {
+                //         data = json::parse(copy);
+                //     } catch (json::JsonException e) {
+                //         log::error("Failed to parse JSON even after Unicode filtering. String: {}", copy);
+                //         callback(false);
+                //         return;
+                //     }
+                // }
                 std::vector<SFHItem> ret;
                 if (!data.contains("songs") || !data["songs"].is_array()) {
                     callback(false);

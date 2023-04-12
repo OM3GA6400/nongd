@@ -72,14 +72,8 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 			}
 		}
 
-		if (nong.songUrl != "local" && !ghc::filesystem::exists(nong.path)) {
-			auto menu = this->getChildByID("buttons-menu");
-			menu->getChildByID("download-button")->setVisible(true);
-		}
-
 		this->m_songInfo->m_artistName = nong.authorName;
 		this->m_songInfo->m_songName = nong.songName;
-		// this->updateSongObject(this->m_songInfo);
 		if (auto found = this->getChildByID("song-name-menu")) {
 			this->updateSongNameLabel(this->m_songInfo->m_songName, this->m_songInfo->m_songID);
 		} else {
@@ -166,6 +160,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 	void updateSongObject(SongInfoObject* song) {
 		log::info("name: {}, id: {}", std::string(song->m_songName), song->m_songID);
+		log::info("artist: {}", std::string(song->m_artistName));
 		this->m_fields->m_nongdSong = song->m_songID;
 		if (!nong::checkIfNongsExist(song->m_songID)) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
