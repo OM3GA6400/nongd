@@ -180,11 +180,11 @@ void NongPopup::setActiveSong(SongInfo const& song) {
         loading->show();
         nong::downloadSFH(song, [this, song, loading](double progress) {
             if (progress == 100.f) {
+                loading->fadeAndRemove();
+                this->updateParentSizeAndIDLabel(song);
                 this->setKeyboardEnabled(true);
                 this->setKeypadEnabled(true);
                 this->setMouseEnabled(true);
-                loading->fadeAndRemove();
-                this->updateParentSizeAndIDLabel(song);
             }
         },
         [this, loading](SongInfo const& song, std::string const& error) {
@@ -264,6 +264,9 @@ void NongPopup::deleteSong(SongInfo const& song) {
 
 void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
     auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
+    if (!label) {
+        return;
+    }
     auto sizeText = nong::getFormattedSize(song);
     std::string labelText;
     if (songID != 0) {
