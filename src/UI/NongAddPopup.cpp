@@ -52,15 +52,11 @@ CCSize NongAddPopup::getPopupSize() {
 }
 
 void NongAddPopup::openFile(CCObject* target) {
-    auto options = file::FilePickOptions {
+    file::FilePickOptions options = {
         std::nullopt,
-        {
-            {
-                "Music files",
-                { "*.mp3" }
-            }
-        }
+        {}
     };
+
     if (auto file = file::pickFile(file::PickMode::OpenFile, options)) {
         this->m_songPath = file.unwrap();
         this->createSelectedSongLabel(this->m_songPath.string());
@@ -138,6 +134,10 @@ void NongAddPopup::addSong(CCObject* target) {
     if (!ghc::filesystem::exists(this->m_songPath)) {
         FLAlertLayer::create("Error", "The selected file is invalid!", "Ok")->show();
         return;
+    }
+
+    if (ghc::filesystem::is_directory(this->m_songPath)) {
+        FLAlertLayer::create("Error", "You selected a directory!", "Ok")->show();
     }
 
     if (this->m_songPath.extension().string() != ".mp3") {
