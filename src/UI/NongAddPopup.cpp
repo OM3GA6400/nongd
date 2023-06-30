@@ -138,6 +138,7 @@ void NongAddPopup::addSong(CCObject* target) {
 
     if (ghc::filesystem::is_directory(this->m_songPath)) {
         FLAlertLayer::create("Error", "You selected a directory!", "Ok")->show();
+        return;
     }
 
     if (this->m_songPath.extension().string() != ".mp3") {
