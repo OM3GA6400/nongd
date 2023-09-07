@@ -70,7 +70,7 @@ class $modify(MyCustomSongWidget, CustomSongWidget) {
 
 			invalidSongList = invalidSongList.substr(0, invalidSongList.size() - 2);
 			// If anyone asks this was mat's idea
-			Loader::get()->queueInGDThread([this, invalidSongList]() {
+			Loader::get()->queueInMainThread([this, invalidSongList]() {
 				auto alert = FLAlertLayer::create("Invalid NONGs", "The NONGs [<cr>" + invalidSongList + "</c>] have been deleted, because their paths were invalid.", "Ok");
 				alert->m_scene = this->getParent();
 				alert->show();
