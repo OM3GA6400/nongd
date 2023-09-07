@@ -29,7 +29,7 @@ void NongPopup::createAddButton() {
     
     this->m_addButtonMenu->addChild(addButton);
     this->m_addButtonMenu->setPosition(ccp(524.5f, 29.f));
-    this->addChild(m_addButtonMenu);
+    this->m_mainLayer->addChild(m_addButtonMenu);
 }
 
 void NongPopup::createFetchSongHubMenu() {
@@ -45,7 +45,7 @@ void NongPopup::createFetchSongHubMenu() {
     menu->addChild(fetchButton);
     menu->setPosition(ccp(40.5f, 29.f));
     this->m_fetchSongHubMenu = menu;
-    this->addChild(menu);
+    this->m_mainLayer->addChild(menu);
 }
 
 NongPopup* NongPopup::create(int songID, CustomSongWidget* parent) {
@@ -166,7 +166,7 @@ void NongPopup::createList() {
     this->m_listLayer->addChild(sideRight);
     this->m_listLayer->addChild(this->m_list);
     this->m_listLayer->setPosition(winSize / 2 - m_list->getScaledContentSize() / 2);
-    this->addChild(m_listLayer);
+    this->m_mainLayer->addChild(m_listLayer);
 }
 
 void NongPopup::setActiveSong(SongInfo const& song) {
@@ -209,14 +209,13 @@ void NongPopup::setActiveSong(SongInfo const& song) {
     this->updateParentWidget(song);
 
     this->m_listLayer->removeAllChildrenWithCleanup(true);
-    this->removeChild(m_listLayer);
+    this->m_mainLayer->removeChild(m_listLayer);
     this->m_listLayer = nullptr;
     this->createList();
 }
 
 void NongPopup::openAddPopup(CCObject* target) {
     auto popup = NongAddPopup::create(this);
-    popup->m_noElasticity = true;
     popup->show();
 }
 
@@ -231,7 +230,7 @@ void NongPopup::addSong(SongInfo const& song) {
     this->updateParentWidget(song);
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
-    this->removeChild(m_listLayer);
+    this->m_mainLayer->removeChild(m_listLayer);
     this->m_listLayer = nullptr;
     this->setSongs();
     this->createList();
@@ -256,7 +255,7 @@ void NongPopup::deleteSong(SongInfo const& song) {
     this->updateParentWidget(nong::getActiveNong(this->m_songID));
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
-    this->removeChild(m_listLayer);
+    this->m_mainLayer->removeChild(m_listLayer);
     this->m_listLayer = nullptr;
     this->setSongs();
     this->createList();
@@ -301,7 +300,7 @@ void NongPopup::onSFHFetched(bool result) {
     if (result) {
         FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
         this->m_listLayer->removeAllChildrenWithCleanup(true);
-        this->removeChild(m_listLayer);
+        this->m_mainLayer->removeChild(m_listLayer);
         this->m_listLayer = nullptr;
         this->setSongs();
         this->createList();

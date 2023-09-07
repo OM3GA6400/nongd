@@ -29,7 +29,7 @@ bool NongAddPopup::setup(NongPopup* parent) {
 
     this->m_containerLayer->addChild(this->m_selectSongMenu);
     this->m_containerLayer->addChild(this->m_addSongMenu);
-    this->addChild(this->m_containerLayer);
+    this->m_mainLayer->addChild(this->m_containerLayer);
     this->createSelectedSongLabel("Select a file...");
     this->createInputs();
 
