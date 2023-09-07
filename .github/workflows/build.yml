@@ -21,7 +21,7 @@ jobs:
       matrix:
         config:
           - name: Windows
-            os: windows-lates
+            os: windows-latest
           
           - name: macOS
             os: macos-latest
