@@ -17,6 +17,25 @@ void trim(std::string &s) {
     ltrim(s);
 }
 
+/**
+ * Gracefully stolen from https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
+*/
+std::string random_string(size_t length)
+{
+    auto randchar = []() -> char
+    {
+        const char charset[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[ rand() % max_index ];
+    };
+    std::string str(length,0);
+    std::generate_n(str.begin(), length, randchar);
+    return str;
+}
+
 void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
     auto nongsPath = Mod::get()->getSaveDir().append("nongs");
     if (!ghc::filesystem::exists(nongsPath)) {
@@ -27,7 +46,8 @@ void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID) {
     for (auto const& sfhSong : songs) {
         bool shouldSkip = false;
         auto path = nongsPath;
-        path.append(std::to_string(songID) + "_" + sfhSong.levelName + "_" + sfhSong.songName + ".mp3");
+        auto unique = random_string(16);
+        path.append(std::to_string(songID) + "_" + sfhSong.levelName + "_" + unique + ".mp3");
         for (auto& localSong : nongs.songs) {
             if (localSong.songUrl == sfhSong.downloadUrl) {
                 shouldSkip = true;
