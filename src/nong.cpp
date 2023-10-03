@@ -240,7 +240,7 @@ namespace nong {
             ss << std::setprecision(3) << toMegabytes << "MB";
             return ss.str();
         } catch (ghc::filesystem::filesystem_error) {
-            return "0.00MB";
+            return "N/A";
         }
     }
 
