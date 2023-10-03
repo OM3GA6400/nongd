@@ -3,6 +3,7 @@
 #include <vector>
 #include "types/SongInfo.hpp"
 #include "types/SFHItem.hpp"
+#include "types/FetchStatus.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
 #include <sstream>
@@ -95,7 +96,7 @@ namespace nong {
      * @param songID the id of the song
      * @param callback a callback that takes a boolean as an argument, which is the status of the request
     */
-    void fetchSFH(int songID, std::function<void(bool)> callback);
+    void fetchSFH(int songID, std::function<void(nong::FetchStatus)> callback);
 
     /**
      * Downloads the SFH songs that have been saved to the songID json

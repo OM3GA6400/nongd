@@ -286,29 +286,31 @@ void NongPopup::fetchSongHub(CCObject*) {
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
-                nong::fetchSFH(this->m_songID, [this](bool result) {
+                nong::fetchSFH(this->m_songID, [this](nong::FetchStatus result) {
                     this->onSFHFetched(result);
-                    // nong::downloadAllSFH(this->m_songID, [](std::string name) {
-                    //     FLAlertLayer::create("Download failed", "Song download <cr>failed</c> for song <cy>" + name + "</c>", "Ok")->show();
-                    // });
                 });
             }
         }
     );
 }
 
-void NongPopup::onSFHFetched(bool result) {
-    if (result) {
-        FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
-        this->m_listLayer->removeAllChildrenWithCleanup(true);
-        this->m_mainLayer->removeChild(m_listLayer);
-        this->m_listLayer = nullptr;
-        this->setSongs();
-        this->createList();
-        return;
+void NongPopup::onSFHFetched(nong::FetchStatus result) {
+    switch (result) {
+        case nong::FetchStatus::SUCCESS:
+            FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
+            this->m_listLayer->removeAllChildrenWithCleanup(true);
+            this->m_mainLayer->removeChild(m_listLayer);
+            this->m_listLayer = nullptr;
+            this->setSongs();
+            this->createList();
+            break;
+        case nong::FetchStatus::NOTHING_FOUND:
+            FLAlertLayer::create("Failed", "Found no data for this song!", "Ok")->show();
+            break;
+        case nong::FetchStatus::FAILED:
+            FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
+            break;
     }
-
-    FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
 }
 
 int NongPopup::getSongID() {

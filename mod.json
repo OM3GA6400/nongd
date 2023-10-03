@@ -1,6 +1,6 @@
 {
 	"geode": "1.2.1",
-	"version": "v1.0.6",
+	"version": "v1.1.0",
 	"id": "fleym.nongd",
 	"name": "nongd",
 	"developer": "Fleym",
@@ -11,5 +11,13 @@
 	},
 	"tags": [
 		"Music"
-	]
+	],
+	"settings": {
+		"store-mashups": {
+			"name": "Store Mashups",
+			"type": "bool",
+			"description": "Allows mashups to be downloaded from Song File Hub",
+			"default": true
+		}
+	}
 }

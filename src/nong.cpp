@@ -263,7 +263,7 @@ namespace nong {
         return true;
     }
 
-    void fetchSFH(int songID, std::function<void(bool)> callback) {
+    void fetchSFH(int songID, std::function<void(nong::FetchStatus)> callback) {
         std::string url = "https://api.songfilehub.com/songs?songID=" + std::to_string(songID);
         web::AsyncWebRequest()
             .fetch(url)
@@ -277,11 +277,16 @@ namespace nong {
                 data = json::parse(copy);
                 std::vector<SFHItem> ret;
                 if (!data.is_array()) {
-                    callback(false);
+                    callback(nong::FetchStatus::FAILED);
                     return;
                 }
                 auto songs = data.as_array();
+                bool getMashups = Mod::get()->getSettingValue<bool>("store-mashups");
                 for (auto const& song : songs) {
+                    bool isMashup = song["state"].as_string() == "mashup";
+                    if (isMashup && !getMashups) {
+                        continue;
+                    }
                     SFHItem item = {
                         .songName = song["songName"].as_string(),
                         .downloadUrl = song["downloadUrl"].as_string(),
@@ -290,15 +295,19 @@ namespace nong {
                     };
                     ret.push_back(item);
                 }
+                if (ret.size() == 0) {
+                    callback(nong::FetchStatus::NOTHING_FOUND);
+                    return;
+                }
                 addNongsFromSFH(ret, songID);
-                callback(true);
+                callback(nong::FetchStatus::SUCCESS);
             })
             .expect([callback](std::string const& error) {
                 log::error(error);
-                callback(false);
+                callback(nong::FetchStatus::FAILED);
             })
             .cancelled([callback](auto r) {
-                callback(false);
+                callback(nong::FetchStatus::FAILED);
             });
     }
 

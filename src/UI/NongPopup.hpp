@@ -2,6 +2,7 @@
 
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
+#include "../types/FetchStatus.hpp"
 #include "NongCell.hpp"
 #include "../nong.hpp"
 #include "NongAddPopup.hpp"
@@ -44,7 +45,7 @@ protected:
     void updateParentSizeAndIDLabel(SongInfo const& song, int songID = 0);
     void updateParentWidget(SongInfo const& song);
 
-    void onSFHFetched(bool status);
+    void onSFHFetched(nong::FetchStatus result);
     void onClose(CCObject* object) {
         this->m_parentWidget->release();
         Popup::onClose(object);
