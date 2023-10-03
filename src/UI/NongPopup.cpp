@@ -3,6 +3,7 @@
 bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->m_songID = songID;
     this->m_parentWidget = parent;
+    this->m_parentWidget->retain();
     auto winSize = CCDirector::sharedDirector()->getWinSize();
 
     // convenience function provided by Popup 

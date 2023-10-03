@@ -45,6 +45,10 @@ protected:
     void updateParentWidget(SongInfo const& song);
 
     void onSFHFetched(bool status);
+    void onClose(CCObject* object) {
+        this->m_parentWidget->release();
+        Popup::onClose(object);
+    }
 public:
     int getSongID();
     static NongPopup* create(int songID, CustomSongWidget* parent);
