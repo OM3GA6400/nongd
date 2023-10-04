@@ -76,6 +76,14 @@ public:
     void saveNongs(NongData const& data, int songID);
 
     /**
+     * Removes all NONG data for a song ID
+     * 
+     * @param songID the id of the song
+     * @returns the saved data
+    */
+    NongData deleteAll(int songID);
+
+    /**
      * Formats a size in bytes to a x.xxMB string
      * 
      * @param song the song

@@ -82,6 +82,29 @@ void NongManager::addNong(SongInfo const& song, int songID) {
     saveNongs(existingData, songID);
 }
 
+NongData NongManager::deleteAll(int songID) {
+    std::vector<SongInfo> newSongs;
+    auto existingData = this->getNongs(songID);
+
+    for (auto savedSong : existingData.songs) {
+        if (savedSong.path != existingData.defaultPath) {
+            if (savedSong.songUrl != "local" && ghc::filesystem::exists(savedSong.path)) {
+                ghc::filesystem::remove(savedSong.path);
+            }
+            continue;
+        }
+        newSongs.push_back(savedSong);
+    }
+
+    NongData newData = {
+        .active = existingData.defaultPath,
+        .defaultPath = existingData.defaultPath,
+        .songs = newSongs
+    };
+    this->saveNongs(newData, songID);
+    return newData;
+}
+
 void NongManager::deleteNong(SongInfo const& song, int songID) {
     std::vector<SongInfo> newSongs;
     auto existingData = this->getNongs(songID);

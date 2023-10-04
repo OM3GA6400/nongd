@@ -47,6 +47,7 @@ void NongPopup::createRemoveAllButton() {
     auto windowSize = CCDirector::sharedDirector()->getWinSize();
     auto center = windowSize / 2;
     menu->setPosition(center.width, (center.height - this->getListSize().height / 2) - 24.5f);
+    menu->setZOrder(10);
     this->m_mainLayer->addChild(menu);
 }
 
@@ -107,11 +108,18 @@ void NongPopup::deleteAllNongs(CCObject*) {
         "Are you sure you want to <cr>delete all nongs</c> for this song?", 
         "No", 
         "Yes",
-        [](auto, bool btn2) {
+        [this](auto, bool btn2) {
             if (!btn2) {
                 return;
             }
 
+            m_songs = NongManager::get()->deleteAll(this->m_songID);
+            this->updateParentWidget(this->getActiveSong());
+            this->m_listLayer->removeAllChildrenWithCleanup(true);
+            this->m_mainLayer->removeChild(m_listLayer);
+            this->m_listLayer = nullptr;
+            this->setSongs();
+            this->createList();
             FLAlertLayer::create("Success", "All nongs were deleted successfully!", "Ok")->show();
         }
     );
