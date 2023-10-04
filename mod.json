@@ -1,5 +1,5 @@
 {
-	"geode": "1.2.1",
+	"geode": "1.3.5",
 	"version": "v1.1.0",
 	"id": "fleym.nongd",
 	"name": "nongd",
@@ -7,7 +7,7 @@
 	"description": "A NONG song manager for Geometry Dash!",
 	"repository": "https://github.com/Fleeym/nongd",
 	"issues": {
-		"info": "Discord: Flame#7418"
+		"info": "For any issues regarding this mod, send me a message on my discord: 'fleeym'. If you can, please give the level or song ID you are having problems with."
 	},
 	"tags": [
 		"Music"
