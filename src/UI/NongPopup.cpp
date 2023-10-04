@@ -27,7 +27,8 @@ void NongPopup::createAddButton() {
     addButton->setID("add-button");
     
     this->m_addButtonMenu->addChild(addButton);
-    this->m_addButtonMenu->setPosition(ccp(524.5f, 29.f));
+    auto centered = CCDirector::get()->getWinSize() / 2;
+    this->m_addButtonMenu->setPosition(centered.width + this->getPopupSize().width / 2 - 10.f, centered.height - this->getPopupSize().height / 2 + 10.f);
     this->m_mainLayer->addChild(m_addButtonMenu);
 }
 
@@ -63,7 +64,8 @@ void NongPopup::createFetchSongHubMenu() {
     fetchButton->setID("fetch-song-hub-button");
 
     menu->addChild(fetchButton);
-    menu->setPosition(ccp(40.5f, 29.f));
+    auto centered = CCDirector::get()->getWinSize() / 2;
+    menu->setPosition(centered.width - this->getPopupSize().width / 2 + 10.f, centered.height - this->getPopupSize().height / 2 + 10.f);
     this->m_fetchSongHubMenu = menu;
     this->m_mainLayer->addChild(menu);
 }
@@ -80,7 +82,9 @@ NongPopup* NongPopup::create(int songID, CustomSongWidget* parent) {
 }
 
 CCSize NongPopup::getPopupSize() const {
-    return { 500.f, 280.f };
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
+    auto width = std::min(winSize.width - 50.f, 500.f);
+    return { width, 280.f };
 }
 
 void NongPopup::setSongs() {
