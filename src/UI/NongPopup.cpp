@@ -12,6 +12,7 @@ bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->createList();
     this->createAddButton();
     this->createRemoveAllButton();
+    this->createSettingsButton();
     this->createFetchSongHubMenu();
     return true;
 }
@@ -50,6 +51,28 @@ void NongPopup::createRemoveAllButton() {
     menu->setPosition(center.width, (center.height - this->getListSize().height / 2) - 24.5f);
     menu->setZOrder(10);
     this->m_mainLayer->addChild(menu);
+}
+
+void NongPopup::createSettingsButton() {
+    auto menu = CCMenu::create();
+    menu->setID("settings-menu");
+    auto sprite = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+    sprite->setScale(0.8f);
+    auto settingsButton = CCMenuItemSpriteExtra::create(
+        sprite,
+        this,
+        menu_selector(NongPopup::onSettings)
+    );
+    settingsButton->setID("settings-button");
+
+    menu->addChild(settingsButton);
+    auto center = CCDirector::sharedDirector()->getWinSize() / 2;
+    menu->setPosition(center.width + this->getPopupSize().width / 2 - 30.f, center.height + this->getPopupSize().height / 2 - 30.f);
+    this->m_mainLayer->addChild(menu);
+}
+
+void NongPopup::onSettings(CCObject*) {
+    openSettingsPopup(Mod::get());
 }
 
 void NongPopup::createFetchSongHubMenu() {

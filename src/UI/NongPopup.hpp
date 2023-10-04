@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 #include "../types/SongInfo.hpp"
 #include "../types/FetchStatus.hpp"
 #include "../managers/NongManager.hpp"
@@ -38,6 +39,7 @@ protected:
     CCSize getListSize() const;
 
     void createAddButton();
+    void createSettingsButton();
     void createRemoveAllButton();
     void createFetchSongHubMenu();
 
@@ -49,6 +51,7 @@ protected:
     void updateParentWidget(SongInfo const& song);
 
     void onSFHFetched(nongd::FetchStatus result);
+    void onSettings(CCObject*);
     void onClose(CCObject* object) {
         this->m_parentWidget->release();
         Popup::onClose(object);
