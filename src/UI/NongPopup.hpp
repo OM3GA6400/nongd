@@ -18,7 +18,7 @@ using namespace geode::prelude;
 class NongPopup : public Popup<int, CustomSongWidget*> {
 protected:
     int m_songID;
-    CustomSongWidget* m_parentWidget;
+    Ref<CustomSongWidget> m_parentWidget;
     CCMenu* m_addButtonMenu;
     CCMenu* m_fetchSongHubMenu;
     CCLayer* m_listLayer;
@@ -52,10 +52,6 @@ protected:
 
     void onSFHFetched(nongd::FetchStatus result);
     void onSettings(CCObject*);
-    void onClose(CCObject* object) {
-        this->m_parentWidget->release();
-        Popup::onClose(object);
-    }
 public:
     int getSongID();
     static NongPopup* create(int songID, CustomSongWidget* parent);
