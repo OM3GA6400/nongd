@@ -1,6 +1,10 @@
 #pragma once
 
+#include <Geode/Geode.hpp>
 #include <string>
+#include "../manifest.hpp"
+
+using namespace geode::prelude;
 
 struct SongInfo {
     ghc::filesystem::path path;
@@ -13,6 +17,7 @@ struct NongData {
     ghc::filesystem::path active;
     ghc::filesystem::path defaultPath;
     std::vector<SongInfo> songs;
+    int version;
 };
 
 template<>
@@ -33,16 +38,26 @@ struct json::Serialize<NongData> {
             songs.push_back(song);
         }
 
+        int version;
+
+        if (value.contains("version")) {
+            version = value["version"].as_int();
+        } else {
+            version = nongd::getManifestVersion();
+        }
+
         return NongData {
             .active = ghc::filesystem::path(value["active"].as_string()),
             .defaultPath = ghc::filesystem::path(value["defaultPath"].as_string()),
-            .songs = songs
+            .songs = songs,
+            .version = version
         };
     }
 
     static json::Value to_json(NongData const& value) {
         auto ret = json::Object();
         auto array = json::Array();
+        ret["version"] = value.version;
         ret["active"] = value.active.string();
         ret["defaultPath"] = value.defaultPath.string();
         for (auto song : value.songs) {

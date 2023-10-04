@@ -7,6 +7,7 @@
 #include "../trim.hpp"
 #include "../types/FetchStatus.hpp"
 #include "../types/SFHItem.hpp"
+#include "../manifest.hpp"
 
 using namespace geode::prelude;
 

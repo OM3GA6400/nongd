@@ -54,7 +54,8 @@ std::vector<SongInfo> NongManager::validateNongs(int songID) {
         NongData newData = {
             .active = currentData.active,
             .defaultPath = currentData.defaultPath,
-            .songs = validSongs
+            .songs = validSongs,
+            .version = currentData.version
         };
 
         this->saveNongs(newData, songID);
@@ -99,7 +100,8 @@ NongData NongManager::deleteAll(int songID) {
     NongData newData = {
         .active = existingData.defaultPath,
         .defaultPath = existingData.defaultPath,
-        .songs = newSongs
+        .songs = newSongs,
+        .version = existingData.version
     };
     this->saveNongs(newData, songID);
     return newData;
@@ -123,7 +125,8 @@ void NongManager::deleteNong(SongInfo const& song, int songID) {
     NongData newData = {
         .active = existingData.active,
         .defaultPath = existingData.defaultPath,
-        .songs = newSongs
+        .songs = newSongs,
+        .version = existingData.version
     };
     this->saveNongs(newData, songID);
 }
@@ -134,7 +137,8 @@ void NongManager::createDefaultSongIfNull(SongInfo const& song, int songID) {
         NongData nongData = {
             .active = song.path,
             .defaultPath = song.path,
-            .songs = songs
+            .songs = songs,
+            .version = nongd::getManifestVersion()
         };
         this->saveNongs(nongData, songID);
     }
