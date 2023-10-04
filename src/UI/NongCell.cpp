@@ -1,22 +1,7 @@
 #include "NongCell.hpp"
 
-bool NongListCell::init(CCLayer* layer, CCSize const& size) {
-    m_width = size.width;
-    m_height = size.height;
-    m_layer = layer;
-    this->setContentSize(size);
-    this->setID("nong-list-cell");
-    return true;
-}
-
-void NongListCell::draw() {
-    reinterpret_cast<StatsCell*>(this)->StatsCell::draw();
-}
-
-// NongCell
-
 bool NongCell::init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault) {
-    if (!NongListCell::init(parentPopup, size)) return false;
+    if (!ListCell::init(parentPopup, size)) return false;
 
     this->m_songInfo = info;
     this->m_parentPopup = parentPopup;

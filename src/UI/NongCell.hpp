@@ -2,23 +2,14 @@
 
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
+#include "ListCell.hpp"
 #include "NongPopup.hpp"
 
 using namespace geode::prelude;
 
 class NongPopup;
 
-class NongListCell : public CCLayer, public FLAlertLayerProtocol {
-protected:
-    float m_width;
-    float m_height;
-    CCLayer* m_layer;
-
-    bool init(CCLayer* layer, CCSize const& size);
-    void draw() override;
-};
-
-class NongCell : public NongListCell {
+class NongCell : public ListCell {
 protected:
     SongInfo m_songInfo;
     CCLabelBMFont* m_songNameLabel;
