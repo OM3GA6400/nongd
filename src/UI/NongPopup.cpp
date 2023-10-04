@@ -3,7 +3,6 @@
 bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->m_songID = songID;
     this->m_parentWidget = parent;
-    this->m_parentWidget->retain();
 
     auto title = "NONGs for " + std::to_string(songID);
     this->setTitle(title);
