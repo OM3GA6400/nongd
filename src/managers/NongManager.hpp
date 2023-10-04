@@ -1,19 +1,21 @@
 #pragma once
 
-#include <vector>
-#include "types/SongInfo.hpp"
-#include "types/SFHItem.hpp"
-#include "types/FetchStatus.hpp"
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
-#include <sstream>
-#include <string>
-#include <fstream>
-#include <algorithm>
+#include "../types/SongInfo.hpp"
+#include "../random_string.hpp"
+#include "../trim.hpp"
+#include "../types/FetchStatus.hpp"
+#include "../types/SFHItem.hpp"
 
 using namespace geode::prelude;
 
-namespace nong {
+class NongManager : public CCObject {
+protected:
+    inline static NongManager* m_instance = nullptr;
+
+    void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID);
+public:
     /**
      * Adds a NONG to the JSON of a songID
      * 
@@ -96,24 +98,16 @@ namespace nong {
      * @param songID the id of the song
      * @param callback a callback that takes a boolean as an argument, which is the status of the request
     */
-    void fetchSFH(int songID, std::function<void(nong::FetchStatus)> callback);
+    void fetchSFH(int songID, std::function<void(nongd::FetchStatus)> callback);
 
     /**
-     * Downloads the SFH songs that have been saved to the songID json
-     * 
-     * @param songID the id of the song
-     * @param failedCallback a callback that takes the name of the song that will run if the song download fails or is cancelled
-    */
-    void downloadAllSFH(int songID, std::function<void(std::string)> failedCallback);
-
-    /**
-     * Downloads one NONG from SFH
+     * Downloads a song 
      * 
      * @param song the song data
      * @param progress a callback that receives the percentage of the download
      * @param failed a callback that fires if the download fails or is cancelled. it takes the song data, and the error
     */
-    void downloadSFH(SongInfo const& song, std::function<void(double)> progress, std::function<void(SongInfo const&, std::string const&)> failed);
+    void downloadSong(SongInfo const& song, std::function<void(double)> progress, std::function<void(SongInfo const&, std::string const&)> failed);
     
     /**
      * Returns the JSON path for a songID
@@ -123,4 +117,13 @@ namespace nong {
      * @return the path of the JSON
     */
     ghc::filesystem::path getJsonPath(int songID);
-}
+
+    static NongManager* get() {
+        if (m_instance == nullptr) {
+            m_instance = new NongManager;
+            m_instance->retain();
+        }
+
+        return m_instance;
+    }
+};

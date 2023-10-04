@@ -3,8 +3,8 @@
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
 #include "../types/FetchStatus.hpp"
+#include "../managers/NongManager.hpp"
 #include "NongCell.hpp"
-#include "../nong.hpp"
 #include "NongAddPopup.hpp"
 #include <vector>
 #include <fstream>
@@ -37,15 +37,17 @@ protected:
     CCSize getListSize() const;
 
     void createAddButton();
+    void createRemoveAllButton();
     void createFetchSongHubMenu();
 
     void openAddPopup(CCObject*);
     void fetchSongHub(CCObject*);
+    void deleteAllNongs(CCObject*);
 
     void updateParentSizeAndIDLabel(SongInfo const& song, int songID = 0);
     void updateParentWidget(SongInfo const& song);
 
-    void onSFHFetched(nong::FetchStatus result);
+    void onSFHFetched(nongd::FetchStatus result);
     void onClose(CCObject* object) {
         this->m_parentWidget->release();
         Popup::onClose(object);

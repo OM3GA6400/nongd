@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nong {
+namespace nongd {
     enum FetchStatus {
         SUCCESS,
         NOTHING_FOUND,

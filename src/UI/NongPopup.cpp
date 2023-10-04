@@ -4,16 +4,14 @@ bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->m_songID = songID;
     this->m_parentWidget = parent;
     this->m_parentWidget->retain();
-    auto winSize = CCDirector::sharedDirector()->getWinSize();
 
-    // convenience function provided by Popup 
-    // for adding/setting a title to the popup
     auto title = "NONGs for " + std::to_string(songID);
     this->setTitle(title);
 
     this->setSongs();
     this->createList();
     this->createAddButton();
+    this->createRemoveAllButton();
     this->createFetchSongHubMenu();
     return true;
 }
@@ -33,11 +31,31 @@ void NongPopup::createAddButton() {
     this->m_mainLayer->addChild(m_addButtonMenu);
 }
 
+void NongPopup::createRemoveAllButton() {
+    auto menu = CCMenu::create();
+    menu->setID("remove-all-menu");
+    auto sprite = ButtonSprite::create("Remove all");
+    sprite->setScale(0.8f);
+    auto button = CCMenuItemSpriteExtra::create(
+        sprite,
+        this,
+        menu_selector(NongPopup::deleteAllNongs) 
+    );
+    button->setID("remove-all-button");
+
+    menu->addChild(button);
+    auto windowSize = CCDirector::sharedDirector()->getWinSize();
+    auto center = windowSize / 2;
+    menu->setPosition(center.width, (center.height - this->getListSize().height / 2) - 24.5f);
+    this->m_mainLayer->addChild(menu);
+}
+
 void NongPopup::createFetchSongHubMenu() {
     auto menu = CCMenu::create();
     menu->setID("fetch-song-hub-menu");
+    auto sprite = CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png");
     auto fetchButton = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png"),
+        sprite,
         this,
         menu_selector(NongPopup::fetchSongHub)
     );
@@ -65,7 +83,7 @@ CCSize NongPopup::getPopupSize() const {
 }
 
 void NongPopup::setSongs() {
-    m_songs = nong::getNongs(this->m_songID);
+    m_songs = NongManager::get()->getNongs(this->m_songID);
 }
 
 CCArray* NongPopup::createNongCells() {
@@ -84,6 +102,21 @@ CCArray* NongPopup::createNongCells() {
     return songs;
 }
 
+void NongPopup::deleteAllNongs(CCObject*) {
+    createQuickPopup("Delete all nongs", 
+        "Are you sure you want to <cr>delete all nongs</c> for this song?", 
+        "No", 
+        "Yes",
+        [](auto, bool btn2) {
+            if (!btn2) {
+                return;
+            }
+
+            FLAlertLayer::create("Success", "All nongs were deleted successfully!", "Ok")->show();
+        }
+    );
+}
+
 SongInfo NongPopup::getActiveSong() {
     for (auto song : m_songs.songs) {
         if (song.path == m_songs.active) {
@@ -92,7 +125,7 @@ SongInfo NongPopup::getActiveSong() {
     }
     
     m_songs.active = m_songs.defaultPath;
-    nong::saveNongs(m_songs, this->m_songID);
+    NongManager::get()->saveNongs(m_songs, this->m_songID);
     for (auto song : m_songs.songs) {
         if (song.path == m_songs.active) {
             return song;
@@ -103,7 +136,7 @@ SongInfo NongPopup::getActiveSong() {
 }
 
 void NongPopup::saveSongsToJson() {
-    nong::saveNongs(this->m_songs, this->m_songID);
+    NongManager::get()->saveNongs(this->m_songs, this->m_songID);
 }
 
 CCSize NongPopup::getCellSize() const {
@@ -179,7 +212,7 @@ void NongPopup::setActiveSong(SongInfo const& song) {
         loading->setParentLayer(this);
         loading->setFade(true);
         loading->show();
-        nong::downloadSFH(song, [this, song, loading](double progress) {
+        NongManager::get()->downloadSong(song, [this, song, loading](double progress) {
             if (progress == 100.f) {
                 loading->fadeAndRemove();
                 this->updateParentSizeAndIDLabel(song);
@@ -227,7 +260,7 @@ void NongPopup::addSong(SongInfo const& song) {
             return;
         }
     }
-    nong::addNong(song, this->m_songID);
+    NongManager::get()->addNong(song, this->m_songID);
     this->updateParentWidget(song);
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
@@ -252,8 +285,8 @@ void NongPopup::updateParentWidget(SongInfo const& song) {
 }
 
 void NongPopup::deleteSong(SongInfo const& song) {
-    nong::deleteNong(song, this->m_songID);
-    this->updateParentWidget(nong::getActiveNong(this->m_songID));
+    NongManager::get()->deleteNong(song, this->m_songID);
+    this->updateParentWidget(NongManager::get()->getActiveNong(this->m_songID));
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
     this->m_listLayer->removeAllChildrenWithCleanup(true);
     this->m_mainLayer->removeChild(m_listLayer);
@@ -267,7 +300,7 @@ void NongPopup::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
     if (!label) {
         return;
     }
-    auto sizeText = nong::getFormattedSize(song);
+    auto sizeText = NongManager::get()->getFormattedSize(song);
     std::string labelText;
     if (songID != 0) {
         labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
@@ -286,7 +319,7 @@ void NongPopup::fetchSongHub(CCObject*) {
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
-                nong::fetchSFH(this->m_songID, [this](nong::FetchStatus result) {
+                NongManager::get()->fetchSFH(this->m_songID, [this](nongd::FetchStatus result) {
                     this->onSFHFetched(result);
                 });
             }
@@ -294,9 +327,9 @@ void NongPopup::fetchSongHub(CCObject*) {
     );
 }
 
-void NongPopup::onSFHFetched(nong::FetchStatus result) {
+void NongPopup::onSFHFetched(nongd::FetchStatus result) {
     switch (result) {
-        case nong::FetchStatus::SUCCESS:
+        case nongd::FetchStatus::SUCCESS:
             FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
             this->m_listLayer->removeAllChildrenWithCleanup(true);
             this->m_mainLayer->removeChild(m_listLayer);
@@ -304,10 +337,10 @@ void NongPopup::onSFHFetched(nong::FetchStatus result) {
             this->setSongs();
             this->createList();
             break;
-        case nong::FetchStatus::NOTHING_FOUND:
+        case nongd::FetchStatus::NOTHING_FOUND:
             FLAlertLayer::create("Failed", "Found no data for this song!", "Ok")->show();
             break;
-        case nong::FetchStatus::FAILED:
+        case nongd::FetchStatus::FAILED:
             FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
             break;
     }

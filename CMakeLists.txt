@@ -6,6 +6,7 @@ project(nongd VERSION 1.0.0)
 
 file(GLOB SOURCES
     src/UI/*.cpp
+    src/managers/*.cpp
 	src/*.cpp
 )
 
