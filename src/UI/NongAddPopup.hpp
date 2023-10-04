@@ -3,6 +3,7 @@
 #include "NongPopup.hpp"
 #include <Geode/Geode.hpp>
 #include "../types/SongInfo.hpp"
+#include "../random_string.hpp"
 
 using namespace geode::prelude;
 

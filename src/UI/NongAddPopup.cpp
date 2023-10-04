@@ -69,7 +69,6 @@ void NongAddPopup::openFile(CCObject* target) {
 }
 
 void NongAddPopup::createSelectedSongLabel(const std::string& label) {
-    
     if (auto label = this->m_containerLayer->getChildByID("selected-song-label")) {
         this->m_containerLayer->removeChild(label);
     }
@@ -111,7 +110,7 @@ void NongAddPopup::createInputs() {
     this->m_containerLayer->addChild(bgSprite);
     this->m_containerLayer->addChild(this->m_songNameInput);
 
-    this->m_artistNameInput = CCTextInputNode::create(250.f, 20.f, "Artist name", "bigFont.fnt");
+    this->m_artistNameInput = CCTextInputNode::create(250.f, 30.f, "Artist name", "bigFont.fnt");
     this->m_artistNameInput->setID("artist-name-input");
     this->m_artistNameInput->setPosition(centered.width, centered.height - 50.f);
     this->m_artistNameInput->ignoreAnchorPointForPosition(false);
@@ -162,8 +161,17 @@ void NongAddPopup::addSong(CCObject* target) {
         return;
     }
 
+    auto unique = nongd::random_string(16);
+    auto fileName = this->m_songPath.stem().string() + "_" + unique + ".mp3";
+    auto destination = Mod::get()->getSaveDir() / "nongs";
+    destination.append(fileName);
+    auto result = ghc::filesystem::copy_file(this->m_songPath, destination);
+    if (!result) {
+        FLAlertLayer::create("Error", "Failed to save song. Please try again!", "Ok")->show();
+    }
+
     SongInfo song = {
-        .path = this->m_songPath,
+        .path = destination,
         .songName = songName,
         .authorName = artistName,
         .songUrl = "local",

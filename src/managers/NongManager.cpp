@@ -88,7 +88,7 @@ NongData NongManager::deleteAll(int songID) {
 
     for (auto savedSong : existingData.songs) {
         if (savedSong.path != existingData.defaultPath) {
-            if (savedSong.songUrl != "local" && ghc::filesystem::exists(savedSong.path)) {
+            if (ghc::filesystem::exists(savedSong.path)) {
                 ghc::filesystem::remove(savedSong.path);
             }
             continue;
