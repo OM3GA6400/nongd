@@ -3,14 +3,13 @@
 bool NongCell::init(SongInfo info, NongDropdownLayer* parentPopup, CCSize const& size, bool selected, bool isDefault) {
     if (!ListCell::init(parentPopup, size)) return false;
 
-    this->m_songInfo = info;
-    this->m_parentPopup = parentPopup;
+    m_songInfo = info;
+    m_parentPopup = parentPopup;
 
     CCMenuItemSpriteExtra* button;
 
     if (selected) {
         auto sprite = ButtonSprite::create("Set", "goldFont.fnt", "GJ_button_02.png");
-        // sprite->setColor(ccc3(0, 204, 255));
         button = CCMenuItemSpriteExtra::create(
             sprite,
             this,
@@ -41,35 +40,35 @@ bool NongCell::init(SongInfo info, NongDropdownLayer* parentPopup, CCSize const&
     }
 
     menu->setAnchorPoint(ccp(0, 0));
-    menu->setPosition(ccp(320.f, 29.f));
+    menu->setPosition(ccp(280.f, 30.f));
     menu->setID("button-menu");
     this->addChild(menu);
 
-    this->m_songInfoLayer = CCLayer::create();
+    m_songInfoLayer = CCLayer::create();
 
-    this->m_songNameLabel = CCLabelBMFont::create(m_songInfo.songName.c_str(), "bigFont.fnt");
-    this->m_songNameLabel->limitLabelWidth(240.f, 0.8f, 0.1f);
+    m_songNameLabel = CCLabelBMFont::create(m_songInfo.songName.c_str(), "bigFont.fnt");
+    m_songNameLabel->limitLabelWidth(220.f, 0.8f, 0.1f);
 
     if (selected) {
-        this->m_songNameLabel->setColor(ccc3(188, 254, 206));
+        m_songNameLabel->setColor(ccc3(188, 254, 206));
     }
 
-    this->m_authorNameLabel = CCLabelBMFont::create(m_songInfo.authorName.c_str(), "goldFont.fnt");
-    this->m_authorNameLabel->limitLabelWidth(240.f, 0.7f, 0.1f);
-    this->m_authorNameLabel->setID("author-name");
-    this->m_songNameLabel->setID("song-name");
+    m_authorNameLabel = CCLabelBMFont::create(m_songInfo.authorName.c_str(), "goldFont.fnt");
+    m_authorNameLabel->limitLabelWidth(240.f, 0.7f, 0.1f);
+    m_authorNameLabel->setID("author-name");
+    m_songNameLabel->setID("song-name");
 
-    this->m_songInfoLayer->addChild(this->m_authorNameLabel);
-    this->m_songInfoLayer->addChild(this->m_songNameLabel);
-    this->m_songInfoLayer->setID("song-info");
+    m_songInfoLayer->addChild(m_authorNameLabel);
+    m_songInfoLayer->addChild(m_songNameLabel);
+    m_songInfoLayer->setID("song-info");
     auto layout = ColumnLayout::create();
     layout->setAutoScale(false);
     layout->setAxisAlignment(AxisAlignment::Even);
     layout->setCrossAxisLineAlignment(AxisAlignment::Start);
-    this->m_songInfoLayer->setContentSize(ccp(240.f, this->getContentSize().height - 6.f));
-    this->m_songInfoLayer->setAnchorPoint(ccp(0.f, 0.f));
-    this->m_songInfoLayer->setPosition(ccp(12.f, 1.5f));
-    this->m_songInfoLayer->setLayout(layout);
+    m_songInfoLayer->setContentSize(ccp(240.f, this->getContentSize().height - 6.f));
+    m_songInfoLayer->setAnchorPoint(ccp(0.f, 0.f));
+    m_songInfoLayer->setPosition(ccp(12.f, 1.5f));
+    m_songInfoLayer->setLayout(layout);
 
     this->addChild(m_songInfoLayer);
     return true;
