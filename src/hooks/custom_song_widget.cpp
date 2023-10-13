@@ -3,7 +3,8 @@
 
 #include "../types/song_info.hpp"
 #include "../managers/nong_manager.hpp"
-#include "../ui/nong_popup.hpp"
+// #include "../ui/nong_popup.hpp"
+#include "../ui/nong_dropdown_layer.hpp"
 
 using namespace geode::prelude;
 
@@ -222,9 +223,13 @@ class $modify(NongSongWidget, CustomSongWidget) {
 	}
 
 	void addNongLayer(CCObject* target) {
-		auto popup = NongPopup::create(target->getTag(), this);
-		popup->m_noElasticity = true;
-		popup->show();
+		// auto popup = NongPopup::create(target->getTag(), this);
+		// popup->m_noElasticity = true;
+		// popup->show();
+		auto scene = CCDirector::sharedDirector()->getRunningScene();
+		auto layer = NongDropdownLayer::create(m_fields->m_nongdSong, this);
+		scene->addChild(layer);
+		layer->showLayer(false);
 	}
 
 };

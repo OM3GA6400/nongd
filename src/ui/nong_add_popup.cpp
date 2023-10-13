@@ -1,6 +1,6 @@
 #include "nong_add_popup.hpp"
 
-bool NongAddPopup::setup(NongPopup* parent) {
+bool NongAddPopup::setup(NongDropdownLayer* parent) {
     this->setTitle("Add NONG");
     this->m_parentPopup = parent;
 
@@ -39,7 +39,7 @@ bool NongAddPopup::setup(NongPopup* parent) {
     return true;
 }
 
-NongAddPopup* NongAddPopup::create(NongPopup* parent) {
+NongAddPopup* NongAddPopup::create(NongDropdownLayer* parent) {
     auto ret = new NongAddPopup();
     auto size = ret->getPopupSize();
     if (ret && ret->init(size.width, size.height, parent)) {

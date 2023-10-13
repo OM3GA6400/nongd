@@ -4,11 +4,11 @@
 
 #include "../types/song_info.hpp"
 #include "list_cell.hpp"
-#include "nong_popup.hpp"
+#include "nong_dropdown_layer.hpp"
 
 using namespace geode::prelude;
 
-class NongPopup;
+class NongDropdownLayer;
 
 class NongCell : public ListCell {
 protected:
@@ -17,13 +17,13 @@ protected:
     CCLabelBMFont* m_authorNameLabel;
     CCLayer* m_songInfoLayer;
 
-    NongPopup* m_parentPopup;
+    NongDropdownLayer* m_parentPopup;
 
-    bool init(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault);
+    bool init(SongInfo info, NongDropdownLayer* parentPopup, CCSize const& size, bool selected, bool isDefault);
 
     virtual void FLAlert_Clicked(FLAlertLayer*, bool btn2);
 public:
-    static NongCell* create(SongInfo info, NongPopup* parentPopup, CCSize const& size, bool selected, bool isDefault);
+    static NongCell* create(SongInfo info, NongDropdownLayer* parentPopup, CCSize const& size, bool selected, bool isDefault);
     void onSet(CCObject*);
     void deleteSong(CCObject*);
 };

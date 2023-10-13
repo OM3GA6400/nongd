@@ -115,16 +115,16 @@ void NongPopup::setSongs() {
 
 CCArray* NongPopup::createNongCells() {
     auto songs = CCArray::create();
-    auto activeSong = this->getActiveSong();
+    // auto activeSong = this->getActiveSong();
 
-    songs->addObject(NongCell::create(activeSong, this, this->getCellSize(), true, activeSong.path == this->m_songs.defaultPath));
+    // songs->addObject(NongCell::create(activeSong, this, this->getCellSize(), true, activeSong.path == this->m_songs.defaultPath));
 
-    for (auto song : m_songs.songs) {
-        if (m_songs.active == song.path) {
-            continue;
-        }
-        songs->addObject(NongCell::create(song, this, this->getCellSize(), false, song.path == this->m_songs.defaultPath));
-    }
+    // for (auto song : m_songs.songs) {
+    //     if (m_songs.active == song.path) {
+    //         continue;
+    //     }
+    //     songs->addObject(NongCell::create(song, this, this->getCellSize(), false, song.path == this->m_songs.defaultPath));
+    // }
 
     return songs;
 }
@@ -283,8 +283,8 @@ void NongPopup::setActiveSong(SongInfo const& song) {
 }
 
 void NongPopup::openAddPopup(CCObject* target) {
-    auto popup = NongAddPopup::create(this);
-    popup->show();
+    // auto popup = NongAddPopup::create(this);
+    // popup->show();
 }
 
 void NongPopup::addSong(SongInfo const& song) {
