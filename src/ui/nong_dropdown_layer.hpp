@@ -3,6 +3,7 @@
 #include <Geode/Geode.hpp>
 
 #include "../types/song_info.hpp"
+#include "../types/fetch_status.hpp"
 #include "../managers/nong_manager.hpp"
 #include "nong_cell.hpp"
 
@@ -18,7 +19,11 @@ protected:
     void createList();
     SongInfo getActiveSong();
     CCSize getCellSize() const;
+    void deleteAllNongs(CCObject*);
+    void fetchSongFileHub(CCObject*);
+    void onSFHFetched(nongd::FetchStatus result);
 public:
+    int getSongID();
     void setActiveSong(SongInfo const& song);
     void deleteSong(SongInfo const& song);
     void addSong(SongInfo const& song);

@@ -154,3 +154,60 @@ void NongDropdownLayer::addSong(SongInfo const& song) {
 void NongDropdownLayer::saveSongsToJson() {
     NongManager::get()->saveNongs(m_songs, m_songID);
 }
+
+void NongDropdownLayer::onSFHFetched(nongd::FetchStatus result) {
+    switch (result) {
+        case nongd::FetchStatus::SUCCESS:
+            FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
+            m_songs = NongManager::get()->getNongs(m_songID);
+            this->createList();
+            break;
+        case nongd::FetchStatus::NOTHING_FOUND:
+            FLAlertLayer::create("Failed", "Found no data for this song!", "Ok")->show();
+            break;
+        case nongd::FetchStatus::FAILED:
+            FLAlertLayer::create("Failed", "Failed to fetch data from Song File Hub!", "Ok")->show();
+            break;
+    }
+}
+
+void NongDropdownLayer::fetchSongFileHub(CCObject*) {
+    createQuickPopup(
+        "Fetch SFH", 
+        "Do you want to fetch <cl>Song File Hub</c> content for <cy>" + std::to_string(this->m_songID) + "</c>?", 
+        "No", "Yes",
+        [this](auto, bool btn2) {
+            if (btn2) {
+                NongManager::get()->fetchSFH(m_songID, [this](nongd::FetchStatus result) {
+                    this->onSFHFetched(result);
+                });
+            }
+        }
+    );
+}
+
+void NongDropdownLayer::deleteAllNongs(CCObject*) {
+    createQuickPopup("Delete all nongs", 
+        "Are you sure you want to <cr>delete all nongs</c> for this song?", 
+        "No", 
+        "Yes",
+        [this](auto, bool btn2) {
+            if (!btn2) {
+                return;
+            }
+
+            m_songs = NongManager::get()->deleteAll(this->m_songID);
+            this->updateParentWidget(this->getActiveSong());
+            std::vector<SongInfo> newSongs;
+            for (auto song : m_songs.songs) {
+                if (song.path == m_songs.defaultPath) {
+                    newSongs.push_back(song);
+                    break;
+                }
+            }
+            m_songs.active = m_songs.defaultPath;
+            this->createList();
+            FLAlertLayer::create("Success", "All nongs were deleted successfully!", "Ok")->show();
+        }
+    );
+}
