@@ -8,7 +8,7 @@
 
 using namespace geode::prelude;
 
-class NongPopup;
+class NongDropdownLayer;
 
 class NongAddPopup : public Popup<NongDropdownLayer*> {
 protected:

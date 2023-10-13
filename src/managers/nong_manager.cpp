@@ -4,7 +4,6 @@
 NongData NongManager::getNongs(int songID) {
     auto path = this->getJsonPath(songID);
 
-    log::info("song id: {}", songID);
     std::ifstream input(path.string());
     std::stringstream buffer;
     buffer << input.rdbuf();

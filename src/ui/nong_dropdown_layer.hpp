@@ -1,11 +1,13 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 
 #include "../types/song_info.hpp"
 #include "../types/fetch_status.hpp"
 #include "../managers/nong_manager.hpp"
 #include "nong_cell.hpp"
+#include "nong_add_popup.hpp"
 
 using namespace geode::prelude;
 
@@ -15,6 +17,8 @@ protected:
     int m_songID;
     Ref<CustomSongWidget> m_parentWidget;
 
+    bool m_fetching = false;
+
     void setup();
     void createList();
     SongInfo getActiveSong();
@@ -22,6 +26,9 @@ protected:
     void deleteAllNongs(CCObject*);
     void fetchSongFileHub(CCObject*);
     void onSFHFetched(nongd::FetchStatus result);
+    void onSettings(CCObject*);
+    void openAddPopup(CCObject*);
+    void exitLayer(CCObject* target) override;
 public:
     int getSongID();
     void setActiveSong(SongInfo const& song);

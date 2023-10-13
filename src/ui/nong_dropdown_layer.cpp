@@ -1,9 +1,72 @@
 #include "nong_dropdown_layer.hpp"
 
 void NongDropdownLayer::setup() {
-    log::info("song id: {}", m_songID);
     m_songs = NongManager::get()->getNongs(m_songID);
+    auto winsize = CCDirector::sharedDirector()->getWinSize();
+
+    auto spr = CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png");
+    auto menu = CCMenu::create();
+    menu->setID("bottom-right-menu");
+    auto downloadBtn = CCMenuItemSpriteExtra::create(
+        spr,
+        this,
+        menu_selector(NongDropdownLayer::fetchSongFileHub)
+    );
+    spr = CCSprite::createWithSpriteFrameName("GJ_plusBtn_001.png");
+    auto addBtn = CCMenuItemSpriteExtra::create(
+        spr,
+        this,
+        menu_selector(NongDropdownLayer::openAddPopup)
+    );
+    spr = CCSprite::createWithSpriteFrameName("GJ_trashBtn_001.png");
+    auto removeBtn = CCMenuItemSpriteExtra::create(
+        spr,
+        this,
+        menu_selector(NongDropdownLayer::deleteAllNongs)
+    );
+
+    auto layout = ColumnLayout::create();
+    layout->setGap(5.f);
+    layout->setAxisAlignment(AxisAlignment::Start);
+    menu->setLayout(layout);
+    menu->addChild(addBtn);
+    menu->addChild(downloadBtn);
+    menu->addChild(removeBtn);
+    menu->setPosition(winsize.width - 30.f, 165.f);
+    menu->updateLayout();
+    m_mainLayer->addChild(menu);
+
+    menu = CCMenu::create();
+    menu->setID("settings-menu");
+    auto sprite = CCSprite::createWithSpriteFrameName("GJ_optionsBtn_001.png");
+    sprite->setScale(0.8f);
+    auto settingsButton = CCMenuItemSpriteExtra::create(
+        sprite,
+        this,
+        menu_selector(NongDropdownLayer::onSettings)
+    );
+    settingsButton->setID("settings-button");
+    menu->addChild(settingsButton);
+    menu->setPosition(winsize.width - 30.f, winsize.height - 31.f);
+    m_mainLayer->addChild(menu);
+
     this->createList();
+}
+
+void NongDropdownLayer::exitLayer(CCObject* sender) {
+    if (m_fetching) {
+        return;
+    }
+
+    GJDropDownLayer::exitLayer(sender);
+}
+
+void NongDropdownLayer::onSettings(CCObject* sender) {
+    geode::openSettingsPopup(Mod::get());
+}
+
+void NongDropdownLayer::openAddPopup(CCObject* target) {
+    NongAddPopup::create(this)->show();
 }
 
 void NongDropdownLayer::createList() {
@@ -58,27 +121,21 @@ void NongDropdownLayer::setActiveSong(SongInfo const& song) {
         song.path != m_songs.defaultPath &&
         song.songUrl != "local"
     ) {
-        this->setKeyboardEnabled(false);
-        this->setKeypadEnabled(false);
-        this->setMouseEnabled(false);
         auto loading = LoadingCircle::create();
         loading->setParentLayer(this);
         loading->setFade(true);
         loading->show();
+        m_fetching = true;
         NongManager::get()->downloadSong(song, [this, song, loading](double progress) {
             if (progress == 100.f) {
+                m_fetching = false;
+                this->updateParentWidget(song);
                 loading->fadeAndRemove();
-                this->updateParentSizeAndIDLabel(song);
-                this->setKeyboardEnabled(true);
-                this->setKeypadEnabled(true);
-                this->setMouseEnabled(true);
             }
         },
         [this, loading](SongInfo const& song, std::string const& error) {
-            this->setKeyboardEnabled(true);
-            this->setKeypadEnabled(true);
-            this->setMouseEnabled(true);
             loading->fadeAndRemove();
+            m_fetching = false;
             FLAlertLayer::create("Failed", "Failed to download song", "Ok")->show();
 
             for (auto song : m_songs.songs) {
@@ -178,8 +235,15 @@ void NongDropdownLayer::fetchSongFileHub(CCObject*) {
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
-                NongManager::get()->fetchSFH(m_songID, [this](nongd::FetchStatus result) {
+                auto loading = LoadingCircle::create();
+                loading->setParentLayer(this);
+                loading->setFade(true);
+                loading->show();
+                m_fetching = true;
+                NongManager::get()->fetchSFH(m_songID, [this, loading](nongd::FetchStatus result) {
                     this->onSFHFetched(result);
+                    m_fetching = false;
+                    loading->fadeAndRemove();
                 });
             }
         }
