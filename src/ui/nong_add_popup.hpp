@@ -1,8 +1,9 @@
 #pragma once
 
-#include "NongPopup.hpp"
 #include <Geode/Geode.hpp>
-#include "../types/SongInfo.hpp"
+
+#include "nong_popup.hpp"
+#include "../types/song_info.hpp"
 #include "../random_string.hpp"
 
 using namespace geode::prelude;

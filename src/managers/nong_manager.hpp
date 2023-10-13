@@ -2,11 +2,12 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/utils/web.hpp>
-#include "../types/SongInfo.hpp"
+
+#include "../types/song_info.hpp"
 #include "../random_string.hpp"
 #include "../trim.hpp"
-#include "../types/FetchStatus.hpp"
-#include "../types/SFHItem.hpp"
+#include "../types/fetch_status.hpp"
+#include "../types/sfh_item.hpp"
 #include "../manifest.hpp"
 
 using namespace geode::prelude;

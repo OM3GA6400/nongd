@@ -2,16 +2,17 @@
 
 #include <Geode/Geode.hpp>
 #include <Geode/ui/GeodeUI.hpp>
-#include "../types/SongInfo.hpp"
-#include "../types/FetchStatus.hpp"
-#include "../managers/NongManager.hpp"
-#include "NongCell.hpp"
-#include "NongAddPopup.hpp"
 #include <vector>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <algorithm>
+
+#include "../types/song_info.hpp"
+#include "../types/fetch_status.hpp"
+#include "../managers/nong_manager.hpp"
+#include "nong_cell.hpp"
+#include "nong_add_popup.hpp"
 
 using namespace geode::prelude;
 

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include "../types/SongInfo.hpp"
-#include "ListCell.hpp"
-#include "NongPopup.hpp"
+
+#include "../types/song_info.hpp"
+#include "list_cell.hpp"
+#include "nong_popup.hpp"
 
 using namespace geode::prelude;
 

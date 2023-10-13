@@ -1,4 +1,4 @@
-#include "NongPopup.hpp"
+#include "nong_popup.hpp"
 
 bool NongPopup::setup(int songID, CustomSongWidget* parent) {
     this->m_songID = songID;

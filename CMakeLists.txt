@@ -5,8 +5,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(nongd VERSION 1.0.0)
 
 file(GLOB SOURCES
-    src/UI/*.cpp
+    src/ui/*.cpp
     src/managers/*.cpp
+    src/hooks/*.cpp
 	src/*.cpp
 )
 

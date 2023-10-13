@@ -1,4 +1,4 @@
-#include "NongAddPopup.hpp"
+#include "nong_add_popup.hpp"
 
 bool NongAddPopup::setup(NongPopup* parent) {
     this->setTitle("Add NONG");
