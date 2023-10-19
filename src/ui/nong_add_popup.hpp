@@ -1,17 +1,18 @@
 #pragma once
 
-#include "NongPopup.hpp"
 #include <Geode/Geode.hpp>
-#include "../types/SongInfo.hpp"
+
+#include "../types/song_info.hpp"
 #include "../random_string.hpp"
+#include "nong_dropdown_layer.hpp"
 
 using namespace geode::prelude;
 
-class NongPopup;
+class NongDropdownLayer;
 
-class NongAddPopup : public Popup<NongPopup*> {
+class NongAddPopup : public Popup<NongDropdownLayer*> {
 protected:
-    NongPopup* m_parentPopup;
+    NongDropdownLayer* m_parentPopup;
     CCMenuItemSpriteExtra* m_selectSongButton;
     CCMenuItemSpriteExtra* m_addSongButton;
     CCMenu* m_selectSongMenu;
@@ -24,7 +25,7 @@ protected:
 
     ghc::filesystem::path m_songPath;
 
-    bool setup(NongPopup* parent) override;
+    bool setup(NongDropdownLayer* parent) override;
     void createSelectedSongLabel(const std::string&);
     void createInputs();
 
@@ -32,5 +33,5 @@ protected:
     void openFile(CCObject*);
     void addSong(CCObject*);
 public:
-    static NongAddPopup* create(NongPopup* parent);
+    static NongAddPopup* create(NongDropdownLayer* parent);
 };
