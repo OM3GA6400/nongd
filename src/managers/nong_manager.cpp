@@ -157,8 +157,13 @@ std::string NongManager::getFormattedSize(SongInfo const& song) {
 }
 
 ghc::filesystem::path NongManager::getJsonPath(int songID) {
-    auto songIDstr = std::to_string(songID);
-    return Mod::get()->getSaveDir().append("nong_data").append(songIDstr + ".json");
+    auto filename = std::to_string(songID) + ".json";
+    auto nong_data_path = Mod::get()->getSaveDir() / "nong_data";
+    if (!ghc::filesystem::exists(nong_data_path)) {
+        ghc::filesystem::create_directory(nong_data_path);
+    }
+    nong_data_path.append(filename);
+    return nong_data_path;
 }
 
 bool NongManager::checkIfNongsExist(int songID) {
