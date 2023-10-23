@@ -149,12 +149,18 @@ class $modify(NongSongWidget, CustomSongWidget) {
 		if (!ghc::filesystem::exists(song.path) && song.path == defaultPath) {
 			label->setVisible(false);
 			this->getChildByID("id-and-size-label")->setVisible(true);
+			return;
 		} else if (normalLabel && normalLabel->isVisible()) {
 			normalLabel->setVisible(false);
 			label->setVisible(true);
 		}
 
-		auto sizeText = NongManager::get()->getFormattedSize(song);
+		std::string sizeText;
+		if (ghc::filesystem::exists(song.path)) {
+			sizeText = NongManager::get()->getFormattedSize(song);
+		} else {
+			sizeText = "NA";
+		}
 		std::string labelText;
 		if (songID != 0) {
 			labelText = "SongID: " + std::to_string(songID) + "  Size: " + sizeText;
