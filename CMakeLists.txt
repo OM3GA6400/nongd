@@ -11,6 +11,10 @@ file(GLOB SOURCES
 	src/*.cpp
 )
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+endif()
+
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 if (NOT DEFINED ENV{GEODE_SDK})
