@@ -222,11 +222,10 @@ class $modify(NongSongWidget, CustomSongWidget) {
 	}
 
 	void addNongLayer(CCObject* target) {
-		// auto popup = NongPopup::create(target->getTag(), this);
-		// popup->m_noElasticity = true;
-		// popup->show();
 		auto scene = CCDirector::sharedDirector()->getRunningScene();
 		auto layer = NongDropdownLayer::create(m_fields->nongdSong, this);
+		// based robtroll
+		layer->setZOrder(106);
 		scene->addChild(layer);
 		layer->showLayer(false);
 	}
