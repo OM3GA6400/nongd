@@ -75,7 +75,7 @@ bool NongCell::init(SongInfo info, NongDropdownLayer* parentPopup, CCSize const&
 }
 
 void NongCell::onSet(CCObject* target) {
-    this->m_parentPopup->setActiveSong(this->m_songInfo);
+    m_parentPopup->setActiveSong(this->m_songInfo);
 }
 
 void NongCell::deleteSong(CCObject* target) {
@@ -93,6 +93,6 @@ NongCell* NongCell::create(SongInfo info, NongDropdownLayer* parentPopup, CCSize
 
 void NongCell::FLAlert_Clicked(FLAlertLayer* layer, bool btn2) {
     if (btn2) {
-        this->m_parentPopup->deleteSong(this->m_songInfo);
+        m_parentPopup->deleteSong(m_songInfo);
     }
 }

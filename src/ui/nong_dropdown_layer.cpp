@@ -146,7 +146,7 @@ void NongDropdownLayer::setActiveSong(SongInfo const& song) {
         });
     }
 
-    this->m_songs.active = song.path;
+    m_songs.active = song.path;
 
     this->saveSongsToJson();
     
@@ -156,21 +156,21 @@ void NongDropdownLayer::setActiveSong(SongInfo const& song) {
 }
 
 void NongDropdownLayer::updateParentWidget(SongInfo const& song) {
-    this->m_parentWidget->m_songInfo->m_artistName = song.authorName;
-    this->m_parentWidget->m_songInfo->m_songName = song.songName;
+    m_parentWidget->m_songInfo->m_artistName = song.authorName;
+    m_parentWidget->m_songInfo->m_songName = song.songName;
     if (song.songUrl != "local") {
-        this->m_parentWidget->m_songInfo->m_songURL = song.songUrl;
+        m_parentWidget->m_songInfo->m_songURL = song.songUrl;
     }
-    this->m_parentWidget->updateSongObject(this->m_parentWidget->m_songInfo);
-    if (this->m_songs.defaultPath == song.path) {
-        this->updateParentSizeAndIDLabel(song, this->m_songID);
+    m_parentWidget->updateSongObject(this->m_parentWidget->m_songInfo);
+    if (m_songs.defaultPath == song.path) {
+        this->updateParentSizeAndIDLabel(song, m_songID);
     } else {
         this->updateParentSizeAndIDLabel(song);
     }
 }
 
 void NongDropdownLayer::updateParentSizeAndIDLabel(SongInfo const& song, int songID) {
-    auto label = typeinfo_cast<CCLabelBMFont*>(this->m_parentWidget->getChildByID("nongd-id-and-size-label"));
+    auto label = typeinfo_cast<CCLabelBMFont*>(m_parentWidget->getChildByID("nongd-id-and-size-label"));
     if (!label) {
         return;
     }
@@ -231,7 +231,7 @@ void NongDropdownLayer::onSFHFetched(nongd::FetchStatus result) {
 void NongDropdownLayer::fetchSongFileHub(CCObject*) {
     createQuickPopup(
         "Fetch SFH", 
-        "Do you want to fetch <cl>Song File Hub</c> content for <cy>" + std::to_string(this->m_songID) + "</c>?", 
+        "Do you want to fetch <cl>Song File Hub</c> content for <cy>" + std::to_string(m_songID) + "</c>?", 
         "No", "Yes",
         [this](auto, bool btn2) {
             if (btn2) {
@@ -260,7 +260,7 @@ void NongDropdownLayer::deleteAllNongs(CCObject*) {
                 return;
             }
 
-            m_songs = NongManager::get()->deleteAll(this->m_songID);
+            m_songs = NongManager::get()->deleteAll(m_songID);
             this->updateParentWidget(this->getActiveSong());
             std::vector<SongInfo> newSongs;
             for (auto song : m_songs.songs) {
