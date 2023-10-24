@@ -11,7 +11,21 @@ file(GLOB SOURCES
 	src/*.cpp
 )
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND WIN32)
+if (${NONGD_BUILD_ANDROID})
+    if (NOT DEFINED ENV{NDK})
+        message(FATAL_ERROR "Unable to find NDK. Make sure it is defined in your path")
+    else()
+        message(STATUS "Found Android NDK: $ENV{NDK}")
+    endif()
+    set(CMAKE_TOOLCHAIN_FILE ENV{NDK})
+    set(ANDROID_ABI "armeabi-v7a")
+    set(ANDROID_PLATFORM "android-24")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions")
+    set(GEODE_DONT_INSTALL_MODS 1)
+endif()
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND WIN32 AND NOT ${NONGD_BUILD_ANDROID})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
