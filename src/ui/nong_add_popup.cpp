@@ -165,9 +165,16 @@ void NongAddPopup::addSong(CCObject* target) {
     auto fileName = m_songPath.stem().string() + "_" + unique + ".mp3";
     auto destination = Mod::get()->getSaveDir() / "nongs";
     destination.append(fileName);
-    auto result = ghc::filesystem::copy_file(m_songPath, destination);
+    bool result;
+    try {
+        result = ghc::filesystem::copy_file(m_songPath, destination);
+    } catch (...) {
+        FLAlertLayer::create("Error", "Failed to save song. Please try again!", "Ok")->show();
+        return;
+    }
     if (!result) {
         FLAlertLayer::create("Error", "Failed to save song. Please try again!", "Ok")->show();
+        return;
     }
 
     SongInfo song = {
