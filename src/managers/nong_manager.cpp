@@ -1,5 +1,37 @@
 #include "nong_manager.hpp"
 
+bool NongManager::init() {
+    auto path = this->getJsonDir();
+    for (auto const& entry : fs::directory_iterator(path)) {
+        this->readJson(entry.path());
+    }
+
+    return true;
+}
+
+fs::path NongManager::getJsonDir() {
+    auto nongDataPath = fs::path(Mod::get()->getSaveDir() / "nong_data");
+    if (!fs::exists(nongDataPath)) {
+        fs::create_directory(nongDataPath);
+    }
+
+    return nongDataPath;
+}
+
+void NongManager::readJson(fs::path const& path) {
+    if (!fs::exists(path)) {
+        return;
+    }
+
+    int songID = std::stoi(path.stem());
+    std::ifstream input(path);
+    std::stringstream ss;
+    ss << input.rdbuf();
+    input.close();
+
+    auto json = json::parse(std::string_view(ss.str()));
+    m_data[songID] = json::Serialize<NongData>::from_json(json);
+}
 
 NongData NongManager::getNongs(int songID) {
     auto path = this->getJsonPath(songID);
@@ -138,7 +170,7 @@ void NongManager::createDefaultSongIfNull(SongInfo const& song, int songID) {
             .active = song.path,
             .defaultPath = song.path,
             .songs = songs,
-            .version = nongd::getManifestVersion()
+            .version = nongd::get_manifest_version()
         };
         this->saveNongs(nongData, songID);
     }

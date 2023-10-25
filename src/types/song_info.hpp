@@ -44,7 +44,7 @@ struct json::Serialize<NongData> {
         if (value.contains("version")) {
             version = value["version"].as_int();
         } else {
-            version = nongd::getManifestVersion();
+            version = nongd::get_manifest_version();
         }
 
         return NongData {

@@ -1,5 +1,5 @@
 #pragma once
 
 namespace nongd {
-    int getManifestVersion();
+    int get_manifest_version();
 }

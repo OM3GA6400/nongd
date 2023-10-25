@@ -1,7 +1,7 @@
 #include "manifest.hpp"
 
 namespace nongd {
-    int getManifestVersion() {
+    int get_manifest_version() {
         return 1;
     }
 }

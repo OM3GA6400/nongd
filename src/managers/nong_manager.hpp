@@ -9,6 +9,7 @@
 #include "../types/fetch_status.hpp"
 #include "../types/sfh_item.hpp"
 #include "../manifest.hpp"
+#include "../filesystem.hpp"
 
 using namespace geode::prelude;
 
@@ -16,8 +17,15 @@ class NongManager : public CCObject {
 protected:
     inline static NongManager* m_instance = nullptr;
 
+    std::unordered_map<int, NongData> m_data;
+
     void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID);
+
 public:
+    bool init();
+    fs::path getJsonDir();
+    void readJson(fs::path const& filename);
+
     /**
      * Adds a NONG to the JSON of a songID
      * 
