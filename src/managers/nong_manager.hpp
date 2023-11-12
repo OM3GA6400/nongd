@@ -17,22 +17,16 @@ class NongManager : public CCObject {
 protected:
     inline static NongManager* m_instance = nullptr;
 
-    std::unordered_map<int, NongData> m_data;
-
-    void addNongsFromSFH(std::vector<SFHItem> const& songs, int songID);
+    bool addNongsFromSFH(std::vector<SFHItem> const& songs, int songID);
 
 public:
-    bool init();
-    fs::path getJsonDir();
-    void readJson(fs::path const& filename);
-
     /**
      * Adds a NONG to the JSON of a songID
      * 
      * @param song the song to add
      * @param songID the id of the song
     */
-    void addNong(SongInfo const& song, int songID);
+    bool addNong(SongInfo const& song, int songID);
 
     /**
      * Removes a NONG from the JSON of a songID
@@ -40,15 +34,7 @@ public:
      * @param song the song to remove
      * @param songID the id of the song
     */
-    void deleteNong(SongInfo const& song, int songID);
-
-    /**
-     * Checks if any NONGS exist for a songID
-     * 
-     * @param songID the id of the song
-     * @return true if the json exists, false otherwise
-    */
-    bool checkIfNongsExist(int songID);
+    bool deleteNong(SongInfo const& song, int songID);
 
     /**
      * Fetches all NONG data from the songID JSON
@@ -56,17 +42,15 @@ public:
      * @param songID the id of the song
      * @return the data from the JSON
     */
-    NongData getNongs(int songID);
+    Result<NongData> getNongs(int songID);
 
     /**
      * Fetches the active song from the songID JSON
      * 
      * @param songID the id of the song
      * @return the song data
-     * 
-     * @throw std::exception if no nong is set as active
     */
-    SongInfo getActiveNong(int songID);
+    Result<SongInfo> getActiveNong(int songID);
 
     /**
      * Validates any local nongs that have an invalid path
@@ -134,7 +118,7 @@ public:
      * 
      * @return the path of the JSON
     */
-    ghc::filesystem::path getJsonPath(int songID);
+    fs::path getJsonPath(int songID);
 
     static NongManager* get() {
         if (m_instance == nullptr) {

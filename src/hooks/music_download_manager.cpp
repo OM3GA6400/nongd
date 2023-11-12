@@ -3,14 +3,16 @@
 
 #include "../managers/nong_manager.hpp"
 #include "../types/song_info.hpp"
+#include "../filesystem.hpp"
 
 class $modify(MusicDownloadManager) {
 	gd::string pathForSong(int id) {
-		if (!NongManager::get()->checkIfNongsExist(id)) {
+		auto res = NongManager::get()->getNongs(id);
+		if (res.has_error()) {
 			return MusicDownloadManager::pathForSong(id);
 		}
-		auto currentData = NongManager::get()->getNongs(id);
-		if (ghc::filesystem::exists(currentData.active)) {
+		auto currentData = res.unwrap();
+		if (fs::exists(fs::path(currentData.active))) {
 			return currentData.active.string();
 		}
 		return MusicDownloadManager::pathForSong(id);

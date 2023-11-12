@@ -1,7 +1,7 @@
 #include "nong_dropdown_layer.hpp"
 
 void NongDropdownLayer::setup() {
-    m_songs = NongManager::get()->getNongs(m_songID);
+    m_songs = NongManager::get()->getNongs(m_songID).unwrap();
     auto winsize = CCDirector::sharedDirector()->getWinSize();
 
     auto spr = CCSprite::createWithSpriteFrameName("GJ_downloadBtn_001.png");
@@ -187,10 +187,13 @@ void NongDropdownLayer::updateParentSizeAndIDLabel(SongInfo const& song, int son
 }
 
 void NongDropdownLayer::deleteSong(SongInfo const& song) {
-    NongManager::get()->deleteNong(song, m_songID);
-    this->updateParentWidget(NongManager::get()->getActiveNong(m_songID));
+    if (!NongManager::get()->deleteNong(song, m_songID)) {
+        FLAlertLayer::create("Error", "Failed to delete NONG!", "Ok")->show();
+        return;
+    }
+    this->updateParentWidget(NongManager::get()->getActiveNong(m_songID).unwrap());
     FLAlertLayer::create("Success", "The song was deleted!", "Ok")->show();
-    m_songs = NongManager::get()->getNongs(m_songID);
+    m_songs = NongManager::get()->getNongs(m_songID).unwrap();
     this->createList();
 }
 
@@ -201,10 +204,13 @@ void NongDropdownLayer::addSong(SongInfo const& song) {
             return;
         }
     }
-    NongManager::get()->addNong(song, m_songID);
+    if (!NongManager::get()->addNong(song, m_songID)) {
+        FLAlertLayer::create("Error", "Couldn't add NONG!", "Ok")->show();
+        return;
+    }
     this->updateParentWidget(song);
     FLAlertLayer::create("Success", "The song was added!", "Ok")->show();
-    m_songs = NongManager::get()->getNongs(m_songID);
+    m_songs = NongManager::get()->getNongs(m_songID).unwrap();
     this->createList();
 }
 
@@ -216,7 +222,7 @@ void NongDropdownLayer::onSFHFetched(nongd::FetchStatus result) {
     switch (result) {
         case nongd::FetchStatus::SUCCESS:
             FLAlertLayer::create("Success", "The Song File Hub data was fetched successfully!", "Ok")->show();
-            m_songs = NongManager::get()->getNongs(m_songID);
+            m_songs = NongManager::get()->getNongs(m_songID).unwrap();
             this->createList();
             break;
         case nongd::FetchStatus::NOTHING_FOUND:

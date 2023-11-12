@@ -42,7 +42,8 @@ class $modify(NongSongWidget, CustomSongWidget) {
 
 		m_fields->nongdSong = songInfo->m_songID;
 
-		if (!NongManager::get()->checkIfNongsExist(songInfo->m_songID)) {
+		auto nongsRes = NongManager::get()->getNongs(songInfo->m_songID);
+		if (nongsRes.has_error()) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(songInfo->m_songID));
 
 			SongInfo defaultSong = {
@@ -51,7 +52,6 @@ class $modify(NongSongWidget, CustomSongWidget) {
 				.authorName = songInfo->m_artistName,
 				.songUrl = songInfo->m_songURL,
 			};
-
 			NongManager::get()->createDefaultSongIfNull(defaultSong, songInfo->m_songID);
 		}
 
@@ -72,7 +72,7 @@ class $modify(NongSongWidget, CustomSongWidget) {
 			});
 		}
 
-		m_fields->nongData = NongManager::get()->getNongs(m_songInfo->m_songID);
+		m_fields->nongData = NongManager::get()->getNongs(m_songInfo->m_songID).unwrap();
 		SongInfo nong;
 		for (auto song : m_fields->nongData.songs) {
 			if (song.path == m_fields->nongData.active) {
@@ -190,7 +190,8 @@ class $modify(NongSongWidget, CustomSongWidget) {
 		}
 
 		m_fields->nongdSong = song->m_songID;
-		if (!NongManager::get()->checkIfNongsExist(song->m_songID)) {
+		auto nongsRes = NongManager::get()->getNongs(song->m_songID);
+		if (nongsRes.has_error()) {
 			auto strPath = std::string(MusicDownloadManager::sharedState()->pathForSong(song->m_songID));
 
 			SongInfo defaultSong = {
@@ -203,7 +204,7 @@ class $modify(NongSongWidget, CustomSongWidget) {
 			NongManager::get()->createDefaultSongIfNull(defaultSong, song->m_songID);
 		}
 		SongInfo active;
-		auto nongData = NongManager::get()->getNongs(song->m_songID);
+		auto nongData = NongManager::get()->getNongs(song->m_songID).unwrap();
 		for (auto nong : nongData.songs) {
 			if (nong.path == nongData.active) {
 				active = nong;
